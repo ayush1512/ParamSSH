@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARAM SSH Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --bg-card: #1e2746;
+            --accent: #00d9ff;
+            --accent-hover: #00b8d9;
+            --accent-glow: rgba(0, 217, 255, 0.3);
+            --success: #00ff88;
+            --error: #ff4757;
+            --warning: #ffa502;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b7280;
+            --border: #2d3748;
+            --border-light: #3d4a5c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .logo h1 {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--accent), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        
+        .status-dot.connected {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+        
+        /* Main Layout */
+        .app-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .sidebar-section h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #0ea5e9);
+            color: var(--bg-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+        
+        /* Nav Menu */
+        .nav-menu {
+            padding: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+        
+        .nav-item .icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .panel-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .panel-body {
+            padding: 20px;
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .panel-actions .btn {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        
+        .card h4 {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .card .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .card .btn {
+            margin-top: 8px;
+        }
+        
+        /* Output Box */
+        .output-box {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        /* Terminal Panel */
+        .terminal-panel {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .terminal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .terminal-header .terminal-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        
+        .terminal-header .terminal-status.active {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+        
+        .terminal-tabs {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .terminal-tab {
+            padding: 4px 12px;
+            font-size: 11px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .terminal-tab:hover {
+            color: var(--text-primary);
+        }
+        
+        .terminal-tab.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .terminal-body {
+            height: 300px;
+            transition: height 0.2s;
+        }
+        
+        .terminal-body.collapsed {
+            height: 0;
+        }
+        
+        #terminal {
+            height: 100%;
+        }
+        
+        .terminal-log {
+            height: 100%;
+            overflow-y: auto;
+            padding: 12px 16px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .log-entry {
+            margin-bottom: 4px;
+        }
+        
+        .log-entry .time {
+            color: var(--text-muted);
+            margin-right: 8px;
+        }
+        
+        .log-entry .cmd {
+            color: var(--accent);
+        }
+        
+        .log-entry .out {
+            color: var(--text-secondary);
+        }
+        
+        .log-entry .err {
+            color: var(--error);
+        }
+        
+        .log-entry .ok {
+            color: var(--success);
+        }
+        
+        .log-entry .warn {
+            color: var(--warning);
+        }
+        
+        /* Resize Handle */
+        .resize-handle {
+            height: 4px;
+            background: var(--bg-secondary);
+            cursor: ns-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .resize-handle::after {
+            content: '';
+            width: 32px;
+            height: 3px;
+            background: var(--border-light);
+            border-radius: 2px;
+        }
+        
+        /* Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast.success {
+            border-color: var(--success);
+        }
+        
+        .toast.error {
+            border-color: var(--error);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--accent);
+        }
+        
+        .info-box .icon {
+            margin-right: 8px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                transition: left 0.3s;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            <h1>PARAM SSH Manager</h1>
+        </div>
+        <div class="connection-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Disconnected</span>
+        </div>
+    </header>
+    
+    <!-- Main Layout -->
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>SSH Connection</h3>
+                <div class="form-group">
+                    <label>Host</label>
+                    <input type="text" id="host" value="paramutkarsh.cdac.in" placeholder="hostname">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="user" placeholder="your username">
+                </div>
+                <div class="form-group">
+                    <label>Port</label>
+                    <input type="text" id="port" value="4422">
+                </div>
+                <button class="btn btn-primary" onclick="openTerminalAndConnect()">
+                    🔗 Connect via Terminal
+                </button>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: center;">
+                    Opens interactive terminal for password/OTP auth
+                </p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('slurm')">
+                    <span class="icon">📊</span>
+                    <span>SLURM Jobs</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('conda')">
+                    <span class="icon">🐍</span>
+                    <span>Conda Environments</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('system')">
+                    <span class="icon">💻</span>
+                    <span>System Info</span>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-area">
+                <!-- SLURM Tab -->
+                <div id="slurm" class="tab-content active">
+                    <div class="info-box">
+                        <span class="icon">💡</span>
+                        Use the terminal below to connect first, then these controls will work via the active session.
+                    </div>
+                    
+                    <div class="cards-grid">
+                        <div class="card">
+                            <h4>📋 View Jobs</h4>
+                            <button class="btn btn-secondary" onclick="runCommand('squeue -u $USER')">
+                                Show My Jobs
+                            </button>
+                            <button class="btn btn-secondary" onclick="runCommand('sinfo')" style="margin-top: 8px;">
+                                Show Nodes
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>🚀 Submit Job</h4>
+                            <div class="form-group">
+                                <label>Script Path</label>
+                                <input type="text" id="scriptPath" placeholder="/path/to/script.sh">
+                            </div>
+                            <button class="btn btn-primary" onclick="submitJob()">
+                                Submit
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>🔍 Job Details</h4>
+                            <div class="form-group">
+                                <label>Job ID</label>
+                                <input type="text" id="jobIdInfo" placeholder="12345">
+                            </div>
+                            <button class="btn btn-secondary" onclick="jobInfo()">
+                                Get Info
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>❌ Cancel Job</h4>
+                            <div class="form-group">
+                                <label>Job ID</label>
+                                <input type="text" id="jobIdCancel" placeholder="12345">
+                            </div>
+                            <button class="btn btn-danger" onclick="cancelJob()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conda Tab -->
+                <div id="conda" class="tab-content">
+                    <div class="cards-grid">
+                        <div class="card">
+                            <h4>📦 Environments</h4>
+                            <button class="btn btn-secondary" onclick="runCommand('conda env list')">
+                                List Environments
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>➕ Create Environment</h4>
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" id="envName" placeholder="my-env">
+                            </div>
+                            <div class="form-group">
+                                <label>Python Version (optional)</label>
+                                <input type="text" id="pythonVer" placeholder="3.10">
+                            </div>
+                            <button class="btn btn-primary" onclick="createEnv()">
+                                Create
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>📥 Install Package</h4>
+                            <div class="form-group">
+                                <label>Environment</label>
+                                <input type="text" id="envNamePkg" placeholder="my-env">
+                            </div>
+                            <div class="form-group">
+                                <label>Package</label>
+                                <input type="text" id="pkgName" placeholder="numpy">
+                            </div>
+                            <button class="btn btn-secondary" onclick="installPkg()">
+                                Install
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>🗑️ Remove Environment</h4>
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" id="envNameDel" placeholder="my-env">
+                            </div>
+                            <button class="btn btn-danger" onclick="removeEnv()">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Tab -->
+                <div id="system" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>System Information</h2>
+                            <div class="panel-actions">
+                                <button class="btn btn-secondary" onclick="runCommand('uname -a')">OS Info</button>
+                                <button class="btn btn-secondary" onclick="runCommand('df -h')">Disk Usage</button>
+                                <button class="btn btn-secondary" onclick="runCommand('free -h')">Memory</button>
+                                <button class="btn btn-secondary" onclick="runCommand('nvidia-smi')">GPU Status</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Terminal Panel -->
+            <div class="terminal-panel">
+                <div class="resize-handle" id="resizeHandle"></div>
+                <div class="terminal-header" onclick="toggleTerminal()">
+                    <h3>
+                        ⌨️ Terminal
+                        <span class="terminal-status" id="terminalStatus"></span>
+                    </h3>
+                    <div class="terminal-tabs" onclick="event.stopPropagation()">
+                        <button class="terminal-tab active" id="shellTabBtn" onclick="switchTerminalMode('shell')">Shell</button>
+                        <button class="terminal-tab" id="logTabBtn" onclick="switchTerminalMode('log')">Log</button>
+                        <button class="terminal-tab" onclick="clearTerminal()">Clear</button>
+                    </div>
+                </div>
+                <div class="terminal-body" id="terminalBody">
+                    <div id="terminal"></div>
+                    <div class="terminal-log" id="terminalLog" style="display: none;">
+                        <div class="log-entry">
+                            <span class="warn">Connect via the terminal to start using PARAM SSH Manager</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="toastContainer"></div>
+    
+    <script>
+        let term = null;
+        let fitAddon = null;
+        let ws = null;
+        let terminalMode = 'shell';
+        let isConnected = false;
+        let terminalCollapsed = false;
+        
+        // Initialize xterm.js
+        function initTerminal() {
+            term = new Terminal({
+                cursorBlink: true,
+                fontSize: 13,
+                fontFamily: "'Monaco', 'Menlo', 'Consolas', monospace",
+                theme: {
+                    background: '#0f0f23',
+                    foreground: '#d4d4d4',
+                    cursor: '#00d9ff',
+                    selectionBackground: '#264f78',
+                    black: '#1e1e1e',
+                    red: '#ff4757',
+                    green: '#00ff88',
+                    yellow: '#ffa502',
+                    blue: '#00d9ff',
+                    magenta: '#a78bfa',
+                    cyan: '#00d9ff',
+                    white: '#d4d4d4'
+                }
+            });
+            
+            fitAddon = new FitAddon.FitAddon();
+            term.loadAddon(fitAddon);
+            term.loadAddon(new WebLinksAddon.WebLinksAddon());
+            
+            term.open(document.getElementById('terminal'));
+            fitAddon.fit();
+            
+            term.onData(data => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'input', data: data }));
+                }
+            });
+            
+            window.addEventListener('resize', () => {
+                if (fitAddon) {
+                    fitAddon.fit();
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));
+                    }
+                }
+            });
+            
+            term.writeln('\x1b[36m╔═══════════════════════════════════════════════════════════╗\x1b[0m');
+            term.writeln('\x1b[36m║\x1b[0m  \x1b[1;33mPARAM SSH Manager\x1b[0m - Interactive Terminal                 \x1b[36m║\x1b[0m');
+            term.writeln('\x1b[36m║\x1b[0m  Click "Connect via Terminal" to start SSH session        \x1b[36m║\x1b[0m');
+            term.writeln('\x1b[36m╚═══════════════════════════════════════════════════════════╝\x1b[0m');
+            term.writeln('');
+        }
+        
+        function openTerminalAndConnect() {
+            const host = document.getElementById('host').value;
+            const user = document.getElementById('user').value;
+            const port = document.getElementById('port').value;
+            
+            if (!host || !user) {
+                showToast('Please enter host and username', 'error');
+                return;
+            }
+            
+            // Make sure terminal is visible and in shell mode
+            if (terminalCollapsed) {
+                toggleTerminal();
+            }
+            switchTerminalMode('shell');
+            
+            // Close existing connection
+            if (ws) {
+                ws.close();
+            }
+            
+            term.clear();
+            term.writeln(`\x1b[33mConnecting to ${user}@${host}:${port}...\x1b[0m`);
+            term.writeln('\x1b[90mYou will be prompted for password/OTP authentication.\x1b[0m');
+            term.writeln('');
+            
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/terminal`);
+            
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    type: 'connect',
+                    host: host,
+                    user: user,
+                    port: port
+                }));
+                document.getElementById('terminalStatus').classList.add('active');
+            };
+            
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'output') {
+                    term.write(msg.data);
+                    
+                    // Detect successful login
+                    if (msg.data.includes('Last login') || msg.data.includes('$') || msg.data.includes('#')) {
+                        if (!isConnected) {
+                            isConnected = true;
+                            updateConnectionStatus(true);
+                            logToTerminal(`Connected to ${user}@${host}`, 'ok');
+                        }
+                    }
+                } else if (msg.type === 'connected') {
+                    logToTerminal(`SSH session started to ${user}@${host}`, 'warn');
+                } else if (msg.type === 'error') {
+                    term.writeln(`\x1b[31mError: ${msg.data}\x1b[0m`);
+                    logToTerminal(msg.data, 'err');
+                }
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('terminalStatus').classList.remove('active');
+                term.writeln('\r\n\x1b[33mConnection closed.\x1b[0m');
+                isConnected = false;
+                updateConnectionStatus(false);
+                logToTerminal('Connection closed', 'warn');
+            };
+            
+            ws.onerror = () => {
+                term.writeln('\r\n\x1b[31mWebSocket error occurred.\x1b[0m');
+                logToTerminal('WebSocket error', 'err');
+            };
+            
+            setTimeout(() => fitAddon.fit(), 100);
+            term.focus();
+        }
+        
+        function runCommand(cmd) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                showToast('Not connected. Use "Connect via Terminal" first.', 'error');
+                return;
+            }
+            
+            logToTerminal(cmd, 'cmd');
+            ws.send(JSON.stringify({ type: 'input', data: cmd + '\n' }));
+            
+            // Switch to terminal to see output
+            if (terminalMode !== 'shell') {
+                switchTerminalMode('shell');
+            }
+            term.focus();
+        }
+        
+        function submitJob() {
+            const path = document.getElementById('scriptPath').value;
+            if (!path) {
+                showToast('Enter script path', 'error');
+                return;
+            }
+            runCommand(`sbatch ${path}`);
+        }
+        
+        function jobInfo() {
+            const id = document.getElementById('jobIdInfo').value;
+            if (!id) {
+                showToast('Enter job ID', 'error');
+                return;
+            }
+            runCommand(`scontrol show job ${id}`);
+        }
+        
+        function cancelJob() {
+            const id = document.getElementById('jobIdCancel').value;
+            if (!id) {
+                showToast('Enter job ID', 'error');
+                return;
+            }
+            if (confirm(`Cancel job ${id}?`)) {
+                runCommand(`scancel ${id}`);
+            }
+        }
+        
+        function createEnv() {
+            const name = document.getElementById('envName').value;
+            const pyVer = document.getElementById('pythonVer').value;
+            if (!name) {
+                showToast('Enter environment name', 'error');
+                return;
+            }
+            const cmd = pyVer 
+                ? `conda create -n ${name} python=${pyVer} -y`
+                : `conda create -n ${name} -y`;
+            runCommand(cmd);
+        }
+        
+        function installPkg() {
+            const env = document.getElementById('envNamePkg').value;
+            const pkg = document.getElementById('pkgName').value;
+            if (!env || !pkg) {
+                showToast('Fill in all fields', 'error');
+                return;
+            }
+            runCommand(`conda install -n ${env} ${pkg} -y`);
+        }
+        
+        function removeEnv() {
+            const name = document.getElementById('envNameDel').value;
+            if (!name) {
+                showToast('Enter environment name', 'error');
+                return;
+            }
+            if (confirm(`Remove environment "${name}"?`)) {
+                runCommand(`conda env remove -n ${name} -y`);
+            }
+        }
+        
+        function updateConnectionStatus(connected) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (connected) {
+                dot.classList.add('connected');
+                const user = document.getElementById('user').value;
+                const host = document.getElementById('host').value;
+                text.textContent = `${user}@${host}`;
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Disconnected';
+            }
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function switchTerminalMode(mode) {
+            terminalMode = mode;
+            
+            document.getElementById('shellTabBtn').classList.toggle('active', mode === 'shell');
+            document.getElementById('logTabBtn').classList.toggle('active', mode === 'log');
+            
+            document.getElementById('terminal').style.display = mode === 'shell' ? 'block' : 'none';
+            document.getElementById('terminalLog').style.display = mode === 'log' ? 'block' : 'none';
+            
+            if (mode === 'shell' && term) {
+                setTimeout(() => {
+                    fitAddon.fit();
+                    term.focus();
+                }, 50);
+            }
+        }
+        
+        function toggleTerminal() {
+            terminalCollapsed = !terminalCollapsed;
+            document.getElementById('terminalBody').classList.toggle('collapsed', terminalCollapsed);
+            if (!terminalCollapsed && fitAddon) {
+                setTimeout(() => fitAddon.fit(), 100);
+            }
+        }
+        
+        function clearTerminal() {
+            if (terminalMode === 'shell' && term) {
+                term.clear();
+            } else {
+                document.getElementById('terminalLog').innerHTML = '';
+            }
+        }
+        
+        function logToTerminal(message, type = 'out') {
+            const log = document.getElementById('terminalLog');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="time">[${time}]</span><span class="${type}">${escapeHtml(message)}</span>`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `${type === 'error' ? '❌' : '✓'} ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        
+        // Resize handle
+        let isResizing = false;
+        let startY, startHeight;
+        
+        document.getElementById('resizeHandle').addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startY = e.clientY;
+            startHeight = document.getElementById('terminalBody').offsetHeight;
+            document.body.style.cursor = 'ns-resize';
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = startY - e.clientY;
+            const newHeight = Math.max(100, Math.min(600, startHeight + diff));
+            document.getElementById('terminalBody').style.height = newHeight + 'px';
+            if (fitAddon) fitAddon.fit();
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = '';
+            }
+        });
+        
+        // Init
+        document.addEventListener('DOMContentLoaded', initTerminal);
+    </script>
+</body>
+</html>
