@@ -8,24 +8,40 @@
     <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a2e;
-            --bg-tertiary: #16213e;
-            --bg-card: #1e2746;
-            --accent: #00d9ff;
-            --accent-hover: #00b8d9;
-            --accent-glow: rgba(0, 217, 255, 0.3);
-            --success: #00ff88;
-            --error: #ff4757;
-            --warning: #ffa502;
+            /* Clean Black, White & Dark Blue Palette */
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #111111;
+            --bg-card: #0d1117;
+            --bg-elevated: #161b22;
+            
+            /* Dark Blue Accents */
+            --accent: #1e3a5f;
+            --accent-light: #2d5a87;
+            --accent-bright: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.15);
+            
+            /* Status Colors */
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            
+            /* Text Colors */
             --text-primary: #ffffff;
-            --text-secondary: #a0a0b0;
-            --text-muted: #6b7280;
-            --border: #2d3748;
-            --border-light: #3d4a5c;
+            --text-secondary: #a1a1aa;
+            --text-muted: #52525b;
+            
+            /* Borders */
+            --border: #27272a;
+            --border-light: #3f3f46;
+            
+            /* Spacing */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
         }
         
         * {
@@ -41,34 +57,56 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
         
         /* Header */
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
+            padding: 16px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            backdrop-filter: blur(10px);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
         
         .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent), #ffffff);
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             overflow: hidden;
+            border: 1px solid var(--accent-light);
         }
         
         .logo-icon img {
@@ -78,21 +116,23 @@
         }
         
         .logo h1 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            background: linear-gradient(90deg, var(--accent), #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
         }
         
         .connection-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
+            gap: 12px;
+            padding: 10px 18px;
             background: var(--bg-tertiary);
-            border-radius: 20px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
             font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
         
         .status-dot {
@@ -100,11 +140,12 @@
             height: 8px;
             border-radius: 50%;
             background: var(--text-muted);
+            transition: all 0.3s ease;
         }
         
         .status-dot.connected {
             background: var(--success);
-            box-shadow: 0 0 8px var(--success);
+            box-shadow: 0 0 12px var(--success);
         }
         
         /* Main Layout */
@@ -116,7 +157,7 @@
         
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 300px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border);
             display: flex;
@@ -125,45 +166,51 @@
         }
         
         .sidebar-section {
-            padding: 16px;
+            padding: 20px;
             border-bottom: 1px solid var(--border);
         }
         
         .sidebar-section h3 {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
         }
         
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         
         .form-group label {
             display: block;
             font-size: 12px;
             color: var(--text-secondary);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
         
         .form-group input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px 14px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 13px;
+            font-size: 14px;
             font-family: inherit;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group input:hover {
+            border-color: var(--border-light);
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
+            border-color: var(--accent-bright);
+            background: var(--bg-elevated);
         }
         
         .form-group input::placeholder {
@@ -172,27 +219,32 @@
         
         .btn {
             width: 100%;
-            padding: 10px 16px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 6px;
-            font-size: 13px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            font-family: inherit;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #0ea5e9);
-            color: var(--bg-primary);
+            background: var(--accent-bright);
+            color: var(--text-primary);
         }
         
         .btn-primary:hover {
+            background: #2563eb;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
         }
         
         .btn-secondary {
@@ -202,7 +254,8 @@
         }
         
         .btn-secondary:hover {
-            background: var(--border);
+            background: var(--bg-elevated);
+            border-color: var(--border-light);
         }
         
         .btn-danger {
@@ -210,16 +263,20 @@
             color: white;
         }
         
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
         .btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
         }
         
         .btn-group {
             display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 10px;
+            margin-top: 16px;
         }
         
         .btn-group .btn {
@@ -228,83 +285,88 @@
         
         /* Profile Card Styles */
         .profile-card {
-            padding: 10px 12px;
-            background: var(--bg-card);
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 8px;
-            transition: all 0.2s;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
         
         .profile-card:hover {
-            border-color: var(--accent);
-            background: var(--bg-tertiary);
-            box-shadow: 0 2px 8px rgba(0, 217, 255, 0.1);
+            border-color: var(--accent-bright);
+            background: var(--bg-elevated);
         }
         
         .profile-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .profile-card-name {
             font-weight: 600;
-            color: var(--accent);
-            font-size: 13px;
+            color: var(--text-primary);
+            font-size: 14px;
         }
         
         .profile-card-info {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
         }
         
         .profile-card-actions {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
         
         .profile-btn {
             flex: 1;
-            padding: 6px 8px;
-            font-size: 11px;
+            padding: 8px 12px;
+            font-size: 12px;
             border: 1px solid var(--border);
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border-radius: 4px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
         
         .profile-btn:hover {
-            background: var(--border);
-            color: var(--accent);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border-color: var(--border-light);
         }
         
         .profile-btn.delete:hover {
-            background: rgba(255, 71, 87, 0.2);
+            background: rgba(239, 68, 68, 0.15);
             color: var(--error);
+            border-color: var(--error);
         }
         
         /* Nav Menu */
         .nav-menu {
-            padding: 8px;
+            padding: 12px;
+            flex: 1;
         }
         
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 6px;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
+            transition: all 0.15s ease;
+            font-size: 14px;
             margin-bottom: 4px;
+            font-weight: 500;
         }
         
         .nav-item:hover {
@@ -313,13 +375,13 @@
         }
         
         .nav-item.active {
-            background: var(--accent-glow);
-            color: var(--accent);
+            background: var(--accent);
+            color: var(--text-primary);
         }
         
         .nav-item .icon {
-            font-size: 16px;
-            width: 20px;
+            font-size: 18px;
+            width: 24px;
             text-align: center;
         }
         
@@ -329,87 +391,96 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background: var(--bg-primary);
         }
         
         .content-area {
             flex: 1;
-            padding: 20px;
+            padding: 24px 32px;
             overflow-y: auto;
         }
         
         .panel {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
         }
         
         .panel-header {
-            padding: 16px 20px;
+            padding: 18px 24px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: var(--bg-secondary);
         }
         
         .panel-header h2 {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
+            color: var(--text-primary);
         }
         
         .panel-body {
-            padding: 20px;
+            padding: 24px;
         }
         
         .panel-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         
         .panel-actions .btn {
             width: auto;
-            padding: 6px 12px;
-            font-size: 12px;
+            padding: 8px 16px;
+            font-size: 13px;
         }
         
         /* Cards Grid */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
         }
         
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--border-light);
         }
         
         .card h4 {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-weight: 600;
         }
         
         .card .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
         
         .card .btn {
-            margin-top: 8px;
+            margin-top: 12px;
         }
         
         /* Output Box */
         .output-box {
             background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: var(--radius-md);
+            padding: 18px;
             font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            font-size: 12px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.7;
             color: var(--text-secondary);
             max-height: 300px;
             overflow-y: auto;
@@ -419,7 +490,7 @@
         
         /* Terminal Panel */
         .terminal-panel {
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
             border-top: 1px solid var(--border);
             display: flex;
             flex-direction: column;
@@ -432,18 +503,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 16px;
-            background: var(--bg-secondary);
+            padding: 12px 20px;
+            background: var(--bg-tertiary);
             cursor: pointer;
             user-select: none;
+            border-bottom: 1px solid var(--border);
         }
         
         .terminal-header h3 {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--text-primary);
         }
         
         .terminal-header .terminal-status {
@@ -451,42 +524,47 @@
             height: 8px;
             border-radius: 50%;
             background: var(--text-muted);
+            transition: all 0.3s ease;
         }
         
         .terminal-header .terminal-status.active {
             background: var(--success);
-            box-shadow: 0 0 8px var(--success);
+            box-shadow: 0 0 12px var(--success);
         }
         
         .terminal-tabs {
             display: flex;
-            gap: 4px;
+            gap: 6px;
         }
         
         .terminal-tab {
-            padding: 4px 12px;
-            font-size: 11px;
-            background: var(--bg-tertiary);
-            border: none;
-            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
+            font-weight: 500;
         }
         
         .terminal-tab:hover {
             color: var(--text-primary);
+            border-color: var(--border-light);
         }
         
         .terminal-tab.active {
-            background: var(--accent);
-            color: var(--bg-primary);
+            background: var(--accent-bright);
+            color: var(--text-primary);
+            border-color: var(--accent-bright);
         }
         
         .terminal-body {
-            height: 300px;
-            transition: height 0.2s;
+            height: 320px;
+            transition: height 0.2s ease;
             overflow: hidden;
+            background: var(--bg-primary);
         }
         
         .terminal-body.collapsed {
@@ -500,23 +578,23 @@
         .terminal-log {
             height: 100%;
             overflow-y: auto;
-            padding: 12px 16px;
+            padding: 16px 20px;
             font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            font-size: 12px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.7;
         }
         
         .log-entry {
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         
         .log-entry .time {
             color: var(--text-muted);
-            margin-right: 8px;
+            margin-right: 12px;
         }
         
         .log-entry .cmd {
-            color: var(--accent);
+            color: var(--accent-bright);
         }
         
         .log-entry .out {
@@ -537,25 +615,25 @@
         
         /* Dashboard Styles */
         .dashboard-subtab {
-            padding: 12px 16px;
+            padding: 14px 20px;
             background: none;
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             border-bottom: 2px solid transparent;
             margin-bottom: -1px;
         }
         
         .dashboard-subtab:hover {
-            color: var(--accent);
+            color: var(--text-primary);
         }
         
         .dashboard-subtab.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
+            color: var(--accent-bright);
+            border-bottom-color: var(--accent-bright);
         }
         
         .dashboard-view {
@@ -569,56 +647,63 @@
         .job-card {
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: var(--radius-md);
+            padding: 20px;
             display: grid;
             grid-template-columns: auto 1fr auto auto;
-            gap: 16px;
+            gap: 20px;
             align-items: center;
+            transition: border-color 0.2s ease;
+        }
+        
+        .job-card:hover {
+            border-color: var(--border-light);
         }
         
         .job-status-badge {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 12px;
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 11px;
             color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .job-status-badge.success {
-            background: linear-gradient(135deg, var(--success), #00cc66);
+            background: var(--success);
         }
         
         .job-status-badge.warning {
-            background: linear-gradient(135deg, var(--warning), #ff8c00);
+            background: var(--warning);
         }
         
         .job-status-badge.error {
-            background: linear-gradient(135deg, var(--error), #ff3333);
+            background: var(--error);
         }
         
         .job-status-badge.info {
-            background: linear-gradient(135deg, var(--accent), #00b8d9);
+            background: var(--accent-bright);
         }
         
         .job-status-badge.muted {
-            background: linear-gradient(135deg, var(--text-muted), var(--border));
+            background: var(--text-muted);
         }
         
         .job-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
         }
         
         .job-info-item {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
         
         .job-info-item label {
@@ -637,67 +722,71 @@
         
         .job-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-direction: column;
         }
         
         .job-actions button {
-            padding: 6px 12px;
+            padding: 8px 14px;
             font-size: 12px;
-            width: 80px;
+            width: 90px;
         }
         
         /* Resize Handle */
         .resize-handle {
-            height: 12px;
-            background: var(--bg-secondary);
+            height: 8px;
+            background: var(--bg-tertiary);
             cursor: ns-resize;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
-            border-bottom: 1px solid var(--border);
+            transition: background 0.15s ease;
         }
         
         .resize-handle:hover {
-            background: var(--bg-tertiary);
+            background: var(--bg-elevated);
         }
         
         .resize-handle::after {
-            content: '⋮⋮⋮';
-            font-size: 16px;
-            color: var(--text-muted);
-            letter-spacing: 4px;
-            line-height: 1;
+            content: '';
+            width: 40px;
+            height: 3px;
+            background: var(--border-light);
+            border-radius: 2px;
+            transition: background 0.15s ease;
         }
         
         .resize-handle:hover::after {
-            color: var(--accent);
+            background: var(--accent-bright);
         }
         
         /* Notification */
         .toast {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background: var(--bg-card);
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            background: var(--bg-elevated);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             z-index: 1000;
             animation: slideIn 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
         
         .toast.success {
             border-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
         }
         
         .toast.error {
             border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
         }
         
         @keyframes slideIn {
@@ -722,42 +811,130 @@
         
         /* Info Box */
         .info-box {
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid rgba(0, 217, 255, 0.3);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            color: var(--accent);
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--accent-bright);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .info-box .icon {
-            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            transition: border-color 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--border-light);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
         
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
-                left: -280px;
+                left: -300px;
                 top: 0;
                 bottom: 0;
                 z-index: 100;
-                transition: left 0.3s;
+                transition: left 0.3s ease;
             }
             
             .sidebar.open {
                 left: 0;
             }
+            
+            .header {
+                padding: 12px 16px;
+            }
+            
+            .content-area {
+                padding: 16px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    
     <!-- Header -->
     <header class="header">
         <div class="logo">
-            <div class="logo-icon"><img src="/static/nsm.png"></div>
-            <h1>PARAM Web Console</h1>
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+            <div class="logo-icon"><img src="/static/nsm.png" alt="PARAM"></div>
+            <h1>PARAM Console</h1>
         </div>
         <div class="connection-status">
             <span class="status-dot" id="statusDot"></span>
@@ -768,55 +945,55 @@
     <!-- Main Layout -->
     <div class="app-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-section">
                 <h3>SSH Connection</h3>
                 <div class="form-group">
                     <label>Host</label>
-                    <input type="text" id="host" value="paramutkarsh.cdac.in" placeholder="hostname">
+                    <input type="text" id="host" value="paramutkarsh.cdac.in" placeholder="Enter hostname">
                 </div>
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" id="user" placeholder="your username">
+                    <input type="text" id="user" placeholder="Enter your username">
                 </div>
                 <div class="form-group">
                     <label>Port</label>
-                    <input type="text" id="port" value="4422">
+                    <input type="text" id="port" value="4422" placeholder="22">
                 </div>
                 <button class="btn btn-primary" onclick="openTerminalAndConnect()">
-                    🔗 Connect via Terminal
+                    Connect
                 </button>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: center;">
-                    Opens interactive terminal for password/OTP auth
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; text-align: center; line-height: 1.5;">
+                    Interactive terminal with password/OTP support
                 </p>
             </div>
             
             <!-- Saved Profiles Section -->
             <div class="sidebar-section">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="margin: 0;">💾 Saved Profiles</h3>
-                    <button class="btn btn-secondary" onclick="toggleSaveProfileModal()" style="width: auto; padding: 4px 8px; font-size: 12px;">
-                        ➕
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0;">Saved Profiles</h3>
+                    <button class="btn btn-secondary" onclick="toggleSaveProfileModal()" style="width: auto; padding: 6px 12px; font-size: 12px;">
+                        + Add
                     </button>
                 </div>
                 
                 <!-- Save Profile Modal -->
-                <div id="saveProfileModal" style="display: none; padding: 12px; background: var(--bg-card); border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--border);">
-                    <h4 style="margin-top: 0;">Save Current Connection</h4>
+                <div id="saveProfileModal" style="display: none; padding: 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); margin-bottom: 16px; border: 1px solid var(--border);">
+                    <h4 style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600;">Save Current Connection</h4>
                     <div class="form-group">
                         <label>Profile Name</label>
-                        <input type="text" id="profileName" placeholder="e.g., Main Cluster">
+                        <input type="text" id="profileName" placeholder="e.g., Production Server">
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-primary" onclick="saveCurrentProfile()" style="font-size: 12px; flex: 1;">Save</button>
-                        <button class="btn btn-secondary" onclick="toggleSaveProfileModal()" style="font-size: 12px; flex: 1;">Cancel</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="saveCurrentProfile()" style="font-size: 13px; flex: 1;">Save</button>
+                        <button class="btn btn-secondary" onclick="toggleSaveProfileModal()" style="font-size: 13px; flex: 1;">Cancel</button>
                     </div>
                 </div>
                 
                 <!-- Profiles List -->
-                <div id="profilesList" style="max-height: 400px; overflow-y: auto;">
-                    <div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">
-                        Loading profiles...
+                <div id="profilesList" style="max-height: 300px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+                        No saved profiles yet
                     </div>
                 </div>
             </div>
@@ -847,90 +1024,92 @@
                 <!-- SLURM Tab -->
                 <div id="slurm" class="tab-content">
                     <!-- Dashboard Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="margin: 0;">📊 SLURM Job Monitoring Dashboard</h2>
-                        <div style="display: flex; gap: 12px;">
-                            <button class="btn btn-secondary" onclick="loadDashboard()" style="width: auto; padding: 8px 16px;">
-                                🔄 Refresh
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                        <h2 style="margin: 0; font-size: 24px; font-weight: 600;">SLURM Dashboard</h2>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button class="btn btn-secondary" onclick="loadDashboard()" style="width: auto; padding: 10px 20px;">
+                                Refresh
                             </button>
-                            <label style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-tertiary); border-radius: 6px; cursor: pointer; border: 1px solid var(--border);">
-                                <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
+                            <label style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); cursor: pointer; border: 1px solid var(--border); font-size: 13px; font-weight: 500;">
+                                <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()" style="accent-color: var(--accent-bright);">
                                 Auto Refresh
                             </label>
                         </div>
                     </div>
                     
                     <!-- Stats Cards -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Total Jobs</div>
-                            <div style="font-size: 24px; font-weight: bold; color: var(--accent);" id="totalJobsCount">0</div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalJobsCount" style="color: var(--accent-bright);">0</div>
+                            <div class="stat-label">Total Jobs</div>
                         </div>
-                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Running</div>
-                            <div style="font-size: 24px; font-weight: bold; color: var(--success);" id="runningJobsCount">0</div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="runningJobsCount" style="color: var(--success);">0</div>
+                            <div class="stat-label">Running</div>
                         </div>
-                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Pending</div>
-                            <div style="font-size: 24px; font-weight: bold; color: var(--warning);" id="pendingJobsCount">0</div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pendingJobsCount" style="color: var(--warning);">0</div>
+                            <div class="stat-label">Pending</div>
                         </div>
-                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Total Nodes</div>
-                            <div style="font-size: 24px; font-weight: bold; color: var(--accent);" id="totalNodesCount">0</div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalNodesCount" style="color: var(--text-primary);">0</div>
+                            <div class="stat-label">Nodes</div>
                         </div>
                     </div>
                     
                     <!-- Tabs for different views -->
-                    <div style="display: flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap;">
-                        <button class="dashboard-subtab active" onclick="switchDashboardView('jobs')">📋 Jobs</button>
-                        <button class="dashboard-subtab" onclick="switchDashboardView('nodes')">💻 Nodes</button>
-                        <button class="dashboard-subtab" onclick="switchDashboardView('gpu')">🎮 GPU Info</button>
-                        <button class="dashboard-subtab" onclick="switchDashboardView('submit')">🚀 Submit Job</button>
+                    <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap;">
+                        <button class="dashboard-subtab active" onclick="switchDashboardView('jobs')">Jobs</button>
+                        <button class="dashboard-subtab" onclick="switchDashboardView('nodes')">Nodes</button>
+                        <button class="dashboard-subtab" onclick="switchDashboardView('gpu')">GPU Info</button>
+                        <button class="dashboard-subtab" onclick="switchDashboardView('submit')">Submit Job</button>
                     </div>
                     
                     <!-- Jobs View -->
                     <div id="jobs-view" class="dashboard-view active">
                         <div style="display: grid; gap: 16px;" id="jobsContainer">
-                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                                Loading jobs data...
+                            <div style="text-align: center; padding: 60px; color: var(--text-muted); font-size: 14px;">
+                                Connect to load job data
                             </div>
                         </div>
                     </div>
                     
                     <!-- Nodes View -->
                     <div id="nodes-view" class="dashboard-view" style="display: none;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid var(--border);">
-                                    <th style="text-align: left; padding: 12px; color: var(--accent);">Node Name</th>
-                                    <th style="text-align: left; padding: 12px; color: var(--accent);">State</th>
-                                    <th style="text-align: left; padding: 12px; color: var(--accent);">CPUs</th>
-                                    <th style="text-align: left; padding: 12px; color: var(--accent);">Memory</th>
-                                    <th style="text-align: left; padding: 12px; color: var(--accent);">GPUs</th>
-                                </tr>
-                            </thead>
-                            <tbody id="nodesTableBody">
-                                <tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading nodes...</td></tr>
-                            </tbody>
-                        </table>
+                        <div class="panel">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <th style="text-align: left; padding: 14px 16px; color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Node Name</th>
+                                        <th style="text-align: left; padding: 14px 16px; color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">State</th>
+                                        <th style="text-align: left; padding: 14px 16px; color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">CPUs</th>
+                                        <th style="text-align: left; padding: 14px 16px; color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Memory</th>
+                                        <th style="text-align: left; padding: 14px 16px; color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">GPUs</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nodesTableBody">
+                                    <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">Connect to load node data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     <!-- GPU Info View -->
                     <div id="gpu-view" class="dashboard-view" style="display: none;">
                         <div id="gpuContainer" style="display: grid; gap: 16px;">
-                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                                Loading GPU information...
+                            <div style="text-align: center; padding: 60px; color: var(--text-muted); font-size: 14px;">
+                                Connect to load GPU information
                             </div>
                         </div>
                     </div>
                     
                     <!-- Submit Job View -->
                     <div id="submit-view" class="dashboard-view" style="display: none;">
-                        <div class="card" style="max-width: 500px;">
-                            <h4>🚀 Submit SLURM Job</h4>
+                        <div class="card" style="max-width: 480px;">
+                            <h4>Submit SLURM Job</h4>
                             <div class="form-group">
                                 <label>Script Path</label>
-                                <input type="text" id="scriptPath" placeholder="/path/to/script.sh">
+                                <input type="text" id="scriptPath" placeholder="/path/to/your/script.sh">
                             </div>
                             <button class="btn btn-primary" onclick="submitJob()">
                                 Submit Job
@@ -938,23 +1117,23 @@
                         </div>
                     </div>
                     
-                    <!-- Old Quick Controls (keep for compatibility) -->
-                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
-                        <h4 style="margin-bottom: 12px;">🔧 Quick Commands</h4>
-                        <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <!-- Quick Commands -->
+                    <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+                        <h4 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">Quick Commands</h4>
+                        <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
                             <div class="card">
-                                <h5>Job Details</h5>
+                                <h4>Job Details</h4>
                                 <div class="form-group">
-                                    <input type="text" id="jobIdInfo" placeholder="Job ID">
+                                    <input type="text" id="jobIdInfo" placeholder="Enter Job ID">
                                 </div>
-                                <button class="btn btn-secondary" onclick="jobInfo()" style="font-size: 12px;">Get Info</button>
+                                <button class="btn btn-secondary" onclick="jobInfo()">Get Info</button>
                             </div>
                             <div class="card">
-                                <h5>Cancel Job</h5>
+                                <h4>Cancel Job</h4>
                                 <div class="form-group">
-                                    <input type="text" id="jobIdCancel" placeholder="Job ID">
+                                    <input type="text" id="jobIdCancel" placeholder="Enter Job ID">
                                 </div>
-                                <button class="btn btn-danger" onclick="cancelJob()" style="font-size: 12px;">Cancel</button>
+                                <button class="btn btn-danger" onclick="cancelJob()">Cancel Job</button>
                             </div>
                         </div>
                     </div>
@@ -962,52 +1141,54 @@
                 
                 <!-- Conda Tab -->
                 <div id="conda" class="tab-content">
+                    <h2 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600;">Conda Environments</h2>
                     <div class="cards-grid">
                         <div class="card">
-                            <h4>📦 Environments</h4>
+                            <h4>View Environments</h4>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">List all available conda environments</p>
                             <button class="btn btn-secondary" onclick="runCommand('conda env list')">
                                 List Environments
                             </button>
                         </div>
                         
                         <div class="card">
-                            <h4>➕ Create Environment</h4>
+                            <h4>Create Environment</h4>
                             <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" id="envName" placeholder="my-env">
+                                <label>Environment Name</label>
+                                <input type="text" id="envName" placeholder="my-project-env">
                             </div>
                             <div class="form-group">
                                 <label>Python Version (optional)</label>
                                 <input type="text" id="pythonVer" placeholder="3.10">
                             </div>
                             <button class="btn btn-primary" onclick="createEnv()">
-                                Create
+                                Create Environment
                             </button>
                         </div>
                         
                         <div class="card">
-                            <h4>📥 Install Package</h4>
+                            <h4>Install Package</h4>
                             <div class="form-group">
-                                <label>Environment</label>
-                                <input type="text" id="envNamePkg" placeholder="my-env">
+                                <label>Environment Name</label>
+                                <input type="text" id="envNamePkg" placeholder="my-project-env">
                             </div>
                             <div class="form-group">
-                                <label>Package</label>
-                                <input type="text" id="pkgName" placeholder="numpy">
+                                <label>Package Name</label>
+                                <input type="text" id="pkgName" placeholder="numpy pandas scikit-learn">
                             </div>
                             <button class="btn btn-secondary" onclick="installPkg()">
-                                Install
+                                Install Package
                             </button>
                         </div>
                         
                         <div class="card">
-                            <h4>🗑️ Remove Environment</h4>
+                            <h4>Remove Environment</h4>
                             <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" id="envNameDel" placeholder="my-env">
+                                <label>Environment Name</label>
+                                <input type="text" id="envNameDel" placeholder="old-env">
                             </div>
                             <button class="btn btn-danger" onclick="removeEnv()">
-                                Remove
+                                Remove Environment
                             </button>
                         </div>
                     </div>
@@ -1015,9 +1196,10 @@
                 
                 <!-- System Tab -->
                 <div id="system" class="tab-content">
+                    <h2 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600;">System Information</h2>
                     <div class="panel">
                         <div class="panel-header">
-                            <h2>System Information</h2>
+                            <h2>Quick Actions</h2>
                             <div class="panel-actions">
                                 <button class="btn btn-secondary" onclick="runCommand('uname -a')">OS Info</button>
                                 <button class="btn btn-secondary" onclick="runCommand('df -h')">Disk Usage</button>
@@ -1198,7 +1380,7 @@
                 <div class="resize-handle" id="resizeHandle"></div>
                 <div class="terminal-header" onclick="toggleTerminal()">
                     <h3>
-                        ⌨️ Terminal
+                        Terminal
                         <span class="terminal-status" id="terminalStatus"></span>
                     </h3>
                     <div class="terminal-tabs" onclick="event.stopPropagation()">
@@ -1211,7 +1393,7 @@
                     <div id="terminal"></div>
                     <div class="terminal-log" id="terminalLog" style="display: none;">
                         <div class="log-entry">
-                            <span class="warn">Connect via the terminal to start using PARAM SSH Manager</span>
+                            <span class="warn">Connect to start using PARAM SSH Manager</span>
                         </div>
                     </div>
                 </div>
@@ -1229,25 +1411,52 @@
         let isConnected = false;
         let terminalCollapsed = false;
         
-        // Initialize xterm.js
+        // Mobile sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
+        // Initialize xterm.js with new theme
         function initTerminal() {
             term = new Terminal({
                 cursorBlink: true,
-                fontSize: 13,
+                fontSize: 14,
                 fontFamily: "'Monaco', 'Menlo', 'Consolas', monospace",
+                lineHeight: 1.2,
+                letterSpacing: 0,
                 theme: {
-                    background: '#0f0f23',
-                    foreground: '#d4d4d4',
-                    cursor: '#00d9ff',
-                    selectionBackground: '#264f78',
-                    black: '#1e1e1e',
-                    red: '#ff4757',
-                    green: '#00ff88',
-                    yellow: '#ffa502',
-                    blue: '#00d9ff',
-                    magenta: '#a78bfa',
-                    cyan: '#00d9ff',
-                    white: '#d4d4d4'
+                    background: '#000000',
+                    foreground: '#e4e4e7',
+                    cursor: '#3b82f6',
+                    cursorAccent: '#000000',
+                    selectionBackground: 'rgba(59, 130, 246, 0.3)',
+                    selectionForeground: '#ffffff',
+                    black: '#000000',
+                    red: '#ef4444',
+                    green: '#22c55e',
+                    yellow: '#f59e0b',
+                    blue: '#3b82f6',
+                    magenta: '#a855f7',
+                    cyan: '#06b6d4',
+                    white: '#e4e4e7',
+                    brightBlack: '#52525b',
+                    brightRed: '#f87171',
+                    brightGreen: '#4ade80',
+                    brightYellow: '#fbbf24',
+                    brightBlue: '#60a5fa',
+                    brightMagenta: '#c084fc',
+                    brightCyan: '#22d3ee',
+                    brightWhite: '#ffffff'
                 }
             });
             
@@ -1273,10 +1482,10 @@
                 }
             });
             
-            term.writeln('\x1b[36m╔═══════════════════════════════════════════════════════════╗\x1b[0m');
-            term.writeln('\x1b[36m║\x1b[0m  \x1b[1;33mPARAM SSH Manager\x1b[0m - Interactive Terminal                 \x1b[36m║\x1b[0m');
-            term.writeln('\x1b[36m║\x1b[0m  Click "Connect via Terminal" to start SSH session        \x1b[36m║\x1b[0m');
-            term.writeln('\x1b[36m╚═══════════════════════════════════════════════════════════╝\x1b[0m');
+            term.writeln('\x1b[34m┌─────────────────────────────────────────────────────────────┐\x1b[0m');
+            term.writeln('\x1b[34m│\x1b[0m  \x1b[1;37mPARAM SSH Manager\x1b[0m                                          \x1b[34m│\x1b[0m');
+            term.writeln('\x1b[34m│\x1b[0m  Click "Connect" to start your SSH session                  \x1b[34m│\x1b[0m');
+            term.writeln('\x1b[34m└─────────────────────────────────────────────────────────────┘\x1b[0m');
             term.writeln('');
         }
         
@@ -1290,6 +1499,9 @@
                 return;
             }
             
+            // Close mobile sidebar if open
+            closeSidebar();
+            
             // Make sure terminal is visible and in shell mode
             if (terminalCollapsed) {
                 toggleTerminal();
@@ -1302,7 +1514,7 @@
             }
             
             term.clear();
-            term.writeln(`\x1b[33mConnecting to ${user}@${host}:${port}...\x1b[0m`);
+            term.writeln(`\x1b[34mConnecting to ${user}@${host}:${port}...\x1b[0m`);
             term.writeln('\x1b[90mYou will be prompted for password/OTP authentication.\x1b[0m');
             term.writeln('');
             
@@ -1489,8 +1701,8 @@
                         <div class="profile-card">
                             <div class="profile-card-header">
                                 <span class="profile-card-name">${escapeHtml(profile.name)}</span>
-                                <span style="font-size: 10px; color: var(--text-muted);">
-                                    ${profile.last_used ? new Date(profile.last_used).toLocaleDateString() : 'Never'}
+                                <span style="font-size: 11px; color: var(--text-muted);">
+                                    ${profile.last_used ? new Date(profile.last_used).toLocaleDateString() : ''}
                                 </span>
                             </div>
                             <div class="profile-card-info">
@@ -1498,21 +1710,21 @@
                             </div>
                             <div class="profile-card-actions">
                                 <button class="profile-btn" onclick="connectWithProfile(${profile.id}, '${escapeHtml(profile.host)}', '${escapeHtml(profile.user)}', ${profile.port})">
-                                    🔗 Connect
+                                    Connect
                                 </button>
                                 <button class="profile-btn" onclick="editProfile(${profile.id})">
-                                    ✏️ Edit
+                                    Edit
                                 </button>
                                 <button class="profile-btn delete" onclick="deleteProfile(${profile.id})">
-                                    🗑️
+                                    Delete
                                 </button>
                             </div>
                         </div>
                     `).join('');
                 } else {
                     document.getElementById('profilesList').innerHTML = `
-                        <div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">
-                            No saved profiles yet. Save your first connection!
+                        <div style="text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 13px;">
+                            No saved profiles yet
                         </div>
                     `;
                 }
@@ -1660,9 +1872,14 @@
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `${type === 'error' ? '❌' : '✓'} ${message}`;
+            const icon = type === 'error' ? '✕' : type === 'info' ? 'ℹ' : '✓';
+            toast.innerHTML = `<span style="font-size: 16px;">${icon}</span> ${message}`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
         }
         
         // Resize handle
