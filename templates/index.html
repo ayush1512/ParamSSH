@@ -62,18 +62,25 @@
         .logo-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            background: linear-gradient(135deg, var(--accent), #ffffff);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .logo h1 {
             font-size: 18px;
             font-weight: 600;
-            background: linear-gradient(90deg, var(--accent), #a78bfa);
+            background: linear-gradient(90deg, var(--accent), #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -219,6 +226,69 @@
             flex: 1;
         }
         
+        /* Profile Card Styles */
+        .profile-card {
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .profile-card:hover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+            box-shadow: 0 2px 8px rgba(0, 217, 255, 0.1);
+        }
+        
+        .profile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .profile-card-name {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 13px;
+        }
+        
+        .profile-card-info {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        
+        .profile-card-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .profile-btn {
+            flex: 1;
+            padding: 6px 8px;
+            font-size: 11px;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .profile-btn:hover {
+            background: var(--border);
+            color: var(--accent);
+        }
+        
+        .profile-btn.delete:hover {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--error);
+        }
+        
         /* Nav Menu */
         .nav-menu {
             padding: 8px;
@@ -353,6 +423,9 @@
             border-top: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
         }
         
         .terminal-header {
@@ -413,6 +486,7 @@
         .terminal-body {
             height: 300px;
             transition: height 0.2s;
+            overflow: hidden;
         }
         
         .terminal-body.collapsed {
@@ -461,22 +535,144 @@
             color: var(--warning);
         }
         
+        /* Dashboard Styles */
+        .dashboard-subtab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .dashboard-subtab:hover {
+            color: var(--accent);
+        }
+        
+        .dashboard-subtab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        
+        .dashboard-view {
+            display: none;
+        }
+        
+        .dashboard-view.active {
+            display: block;
+        }
+        
+        .job-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .job-status-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .job-status-badge.success {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+        }
+        
+        .job-status-badge.warning {
+            background: linear-gradient(135deg, var(--warning), #ff8c00);
+        }
+        
+        .job-status-badge.error {
+            background: linear-gradient(135deg, var(--error), #ff3333);
+        }
+        
+        .job-status-badge.info {
+            background: linear-gradient(135deg, var(--accent), #00b8d9);
+        }
+        
+        .job-status-badge.muted {
+            background: linear-gradient(135deg, var(--text-muted), var(--border));
+        }
+        
+        .job-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .job-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .job-info-item label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .job-info-item value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
+        }
+        
+        .job-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: 80px;
+        }
+        
         /* Resize Handle */
         .resize-handle {
-            height: 4px;
+            height: 12px;
             background: var(--bg-secondary);
             cursor: ns-resize;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .resize-handle:hover {
+            background: var(--bg-tertiary);
         }
         
         .resize-handle::after {
-            content: '';
-            width: 32px;
-            height: 3px;
-            background: var(--border-light);
-            border-radius: 2px;
+            content: '⋮⋮⋮';
+            font-size: 16px;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+            line-height: 1;
+        }
+        
+        .resize-handle:hover::after {
+            color: var(--accent);
         }
         
         /* Notification */
@@ -560,8 +756,8 @@
     <!-- Header -->
     <header class="header">
         <div class="logo">
-            <div class="logo-icon">⚡</div>
-            <h1>PARAM SSH Manager</h1>
+            <div class="logo-icon"><img src="/static/nsm.png"></div>
+            <h1>PARAM Web Console</h1>
         </div>
         <div class="connection-status">
             <span class="status-dot" id="statusDot"></span>
@@ -595,8 +791,42 @@
                 </p>
             </div>
             
+            <!-- Saved Profiles Section -->
+            <div class="sidebar-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="margin: 0;">💾 Saved Profiles</h3>
+                    <button class="btn btn-secondary" onclick="toggleSaveProfileModal()" style="width: auto; padding: 4px 8px; font-size: 12px;">
+                        ➕
+                    </button>
+                </div>
+                
+                <!-- Save Profile Modal -->
+                <div id="saveProfileModal" style="display: none; padding: 12px; background: var(--bg-card); border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--border);">
+                    <h4 style="margin-top: 0;">Save Current Connection</h4>
+                    <div class="form-group">
+                        <label>Profile Name</label>
+                        <input type="text" id="profileName" placeholder="e.g., Main Cluster">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary" onclick="saveCurrentProfile()" style="font-size: 12px; flex: 1;">Save</button>
+                        <button class="btn btn-secondary" onclick="toggleSaveProfileModal()" style="font-size: 12px; flex: 1;">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Profiles List -->
+                <div id="profilesList" style="max-height: 400px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">
+                        Loading profiles...
+                    </div>
+                </div>
+            </div>
+            
             <nav class="nav-menu">
-                <div class="nav-item active" onclick="switchTab('slurm')">
+                <div class="nav-item active" onclick="switchTab('files')">
+                    <span class="icon">📁</span>
+                    <span>File Manager</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('slurm')">
                     <span class="icon">📊</span>
                     <span>SLURM Jobs</span>
                 </div>
@@ -615,54 +845,117 @@
         <main class="main-content">
             <div class="content-area">
                 <!-- SLURM Tab -->
-                <div id="slurm" class="tab-content active">
-                    <div class="info-box">
-                        <span class="icon">💡</span>
-                        Use the terminal below to connect first, then these controls will work via the active session.
+                <div id="slurm" class="tab-content">
+                    <!-- Dashboard Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">📊 SLURM Job Monitoring Dashboard</h2>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="loadDashboard()" style="width: auto; padding: 8px 16px;">
+                                🔄 Refresh
+                            </button>
+                            <label style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-tertiary); border-radius: 6px; cursor: pointer; border: 1px solid var(--border);">
+                                <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
+                                Auto Refresh
+                            </label>
+                        </div>
                     </div>
                     
-                    <div class="cards-grid">
-                        <div class="card">
-                            <h4>📋 View Jobs</h4>
-                            <button class="btn btn-secondary" onclick="runCommand('squeue -u $USER')">
-                                Show My Jobs
-                            </button>
-                            <button class="btn btn-secondary" onclick="runCommand('sinfo')" style="margin-top: 8px;">
-                                Show Nodes
-                            </button>
+                    <!-- Stats Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Total Jobs</div>
+                            <div style="font-size: 24px; font-weight: bold; color: var(--accent);" id="totalJobsCount">0</div>
                         </div>
-                        
-                        <div class="card">
-                            <h4>🚀 Submit Job</h4>
+                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Running</div>
+                            <div style="font-size: 24px; font-weight: bold; color: var(--success);" id="runningJobsCount">0</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Pending</div>
+                            <div style="font-size: 24px; font-weight: bold; color: var(--warning);" id="pendingJobsCount">0</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Total Nodes</div>
+                            <div style="font-size: 24px; font-weight: bold; color: var(--accent);" id="totalNodesCount">0</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabs for different views -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap;">
+                        <button class="dashboard-subtab active" onclick="switchDashboardView('jobs')">📋 Jobs</button>
+                        <button class="dashboard-subtab" onclick="switchDashboardView('nodes')">💻 Nodes</button>
+                        <button class="dashboard-subtab" onclick="switchDashboardView('gpu')">🎮 GPU Info</button>
+                        <button class="dashboard-subtab" onclick="switchDashboardView('submit')">🚀 Submit Job</button>
+                    </div>
+                    
+                    <!-- Jobs View -->
+                    <div id="jobs-view" class="dashboard-view active">
+                        <div style="display: grid; gap: 16px;" id="jobsContainer">
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                Loading jobs data...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nodes View -->
+                    <div id="nodes-view" class="dashboard-view" style="display: none;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="text-align: left; padding: 12px; color: var(--accent);">Node Name</th>
+                                    <th style="text-align: left; padding: 12px; color: var(--accent);">State</th>
+                                    <th style="text-align: left; padding: 12px; color: var(--accent);">CPUs</th>
+                                    <th style="text-align: left; padding: 12px; color: var(--accent);">Memory</th>
+                                    <th style="text-align: left; padding: 12px; color: var(--accent);">GPUs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nodesTableBody">
+                                <tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading nodes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- GPU Info View -->
+                    <div id="gpu-view" class="dashboard-view" style="display: none;">
+                        <div id="gpuContainer" style="display: grid; gap: 16px;">
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                Loading GPU information...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Job View -->
+                    <div id="submit-view" class="dashboard-view" style="display: none;">
+                        <div class="card" style="max-width: 500px;">
+                            <h4>🚀 Submit SLURM Job</h4>
                             <div class="form-group">
                                 <label>Script Path</label>
                                 <input type="text" id="scriptPath" placeholder="/path/to/script.sh">
                             </div>
                             <button class="btn btn-primary" onclick="submitJob()">
-                                Submit
+                                Submit Job
                             </button>
                         </div>
-                        
-                        <div class="card">
-                            <h4>🔍 Job Details</h4>
-                            <div class="form-group">
-                                <label>Job ID</label>
-                                <input type="text" id="jobIdInfo" placeholder="12345">
+                    </div>
+                    
+                    <!-- Old Quick Controls (keep for compatibility) -->
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+                        <h4 style="margin-bottom: 12px;">🔧 Quick Commands</h4>
+                        <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                            <div class="card">
+                                <h5>Job Details</h5>
+                                <div class="form-group">
+                                    <input type="text" id="jobIdInfo" placeholder="Job ID">
+                                </div>
+                                <button class="btn btn-secondary" onclick="jobInfo()" style="font-size: 12px;">Get Info</button>
                             </div>
-                            <button class="btn btn-secondary" onclick="jobInfo()">
-                                Get Info
-                            </button>
-                        </div>
-                        
-                        <div class="card">
-                            <h4>❌ Cancel Job</h4>
-                            <div class="form-group">
-                                <label>Job ID</label>
-                                <input type="text" id="jobIdCancel" placeholder="12345">
+                            <div class="card">
+                                <h5>Cancel Job</h5>
+                                <div class="form-group">
+                                    <input type="text" id="jobIdCancel" placeholder="Job ID">
+                                </div>
+                                <button class="btn btn-danger" onclick="cancelJob()" style="font-size: 12px;">Cancel</button>
                             </div>
-                            <button class="btn btn-danger" onclick="cancelJob()">
-                                Cancel
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -730,6 +1023,170 @@
                                 <button class="btn btn-secondary" onclick="runCommand('df -h')">Disk Usage</button>
                                 <button class="btn btn-secondary" onclick="runCommand('free -h')">Memory</button>
                                 <button class="btn btn-secondary" onclick="runCommand('nvidia-smi')">GPU Status</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Files Tab -->
+                <div id="files" class="tab-content active">
+                    <!-- File Browser Section -->
+                    <div class="panel" style="margin-bottom: 20px;">
+                        <div class="panel-header">
+                            <h2>📁 File Browser</h2>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <input type="text" id="browsePath" placeholder="Enter path (e.g., ~, ~/scratch)" 
+                                    style="padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px; width: 300px;">
+                                <button class="btn btn-primary" onclick="browseDirectory()" style="width: auto; padding: 6px 16px;">Browse</button>
+                                <button class="btn btn-secondary" onclick="browseHome()" style="width: auto; padding: 6px 16px;">Home</button>
+                                <button class="btn btn-secondary" onclick="browseScratch()" style="width: auto; padding: 6px 16px;">Scratch</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="filesBrowser" style="overflow-x: auto;">
+                                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                    Enter a path and click Browse to view files
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cards-grid">
+                        <!-- File Upload Card -->
+                        <div class="card">
+                            <h4>⬆️ Upload File</h4>
+                            <div class="form-group">
+                                <label>Local File</label>
+                                <input type="file" id="fileInput" style="padding: 8px; font-size: 12px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Remote Path</label>
+                                <input type="text" id="uploadRemotePath" placeholder="~/myfile.txt" value="~/uploads/">
+                            </div>
+                            <button class="btn btn-primary" onclick="uploadFileToRemote()">Upload</button>
+                            <div id="uploadStatus" style="margin-top: 8px; font-size: 12px;"></div>
+                        </div>
+                        
+                        <!-- File Download Card -->
+                        <div class="card">
+                            <h4>⬇️ Download File</h4>
+                            <div class="form-group">
+                                <label>Remote File Path</label>
+                                <input type="text" id="downloadRemotePath" placeholder="~/myfile.txt">
+                            </div>
+                            <button class="btn btn-primary" onclick="downloadFile()">Download</button>
+                            <div id="downloadStatus" style="margin-top: 8px; font-size: 12px;"></div>
+                        </div>
+                        
+                        <!-- File Search Card -->
+                        <div class="card">
+                            <h4>🔍 Search Files</h4>
+                            <div class="form-group">
+                                <label>Search Path</label>
+                                <input type="text" id="searchPath" placeholder="~" value="~">
+                            </div>
+                            <div class="form-group">
+                                <label>File Pattern</label>
+                                <input type="text" id="searchPattern" placeholder="*.py">
+                            </div>
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="searchDepth">
+                                    <span>Current directory only</span>
+                                </label>
+                            </div>
+                            <button class="btn btn-primary" onclick="searchFiles()">Search</button>
+                        </div>
+                        
+                        <!-- View File Content Card -->
+                        <div class="card">
+                            <h4>👁️ View File Content</h4>
+                            <div class="form-group">
+                                <label>File Path</label>
+                                <input type="text" id="viewFilePath" placeholder="~/script.py">
+                            </div>
+                            <div class="form-group">
+                                <label>Lines to show</label>
+                                <input type="number" id="viewLines" value="50" min="10" max="1000">
+                            </div>
+                            <button class="btn btn-primary" onclick="viewFileContent()">View</button>
+                        </div>
+                        
+                        <!-- Create Directory Card -->
+                        <div class="card">
+                            <h4>📁 Create Directory</h4>
+                            <div class="form-group">
+                                <label>Directory Path</label>
+                                <input type="text" id="createDirPath" placeholder="~/new_folder">
+                            </div>
+                            <button class="btn btn-primary" onclick="createDirectory()">Create</button>
+                        </div>
+                        
+                        <!-- Delete File/Directory Card -->
+                        <div class="card">
+                            <h4>🗑️ Delete File/Directory</h4>
+                            <div class="form-group">
+                                <label>Path</label>
+                                <input type="text" id="deletePath" placeholder="~/file_or_folder">
+                            </div>
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="deleteIsDir">
+                                    <span>Is Directory</span>
+                                </label>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteFileOrDir()">Delete</button>
+                        </div>
+                        
+                        <!-- Rename/Move Card -->
+                        <div class="card">
+                            <h4>✏️ Rename/Move</h4>
+                            <div class="form-group">
+                                <label>Old Path</label>
+                                <input type="text" id="renameOldPath" placeholder="~/oldname.txt">
+                            </div>
+                            <div class="form-group">
+                                <label>New Path</label>
+                                <input type="text" id="renameNewPath" placeholder="~/newname.txt">
+                            </div>
+                            <button class="btn btn-primary" onclick="renameFile()">Rename/Move</button>
+                        </div>
+                        
+                        <!-- Edit File Card -->
+                        <div class="card">
+                            <h4>✏️ Edit File</h4>
+                            <div class="form-group">
+                                <label>Directory Path</label>
+                                <input type="text" id="editFilePath" placeholder="~/">
+                            </div>
+                            <div class="form-group">
+                                <label>File Name</label>
+                                <input type="text" id="editFileName" placeholder="script.py">
+                            </div>
+                            <button class="btn btn-primary" onclick="editFile()">Edit in Terminal</button>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Opens nano editor in terminal</p>
+                        </div>
+                        
+                        <!-- Disk Usage Card -->
+                        <div class="card" style="grid-column: 1 / -1;">
+                            <h4>💾 Disk Usage & Quota</h4>
+                            <div class="form-group">
+                                <label>Path</label>
+                                <input type="text" id="diskQuotaPath" placeholder="~" value="~">
+                            </div>
+                            <button class="btn btn-primary" onclick="checkDiskQuota()">Check Usage</button>
+                        </div>
+                    </div>
+                    
+                    <!-- File Content Viewer -->
+                    <div id="fileContentViewer" style="display: none; margin-top: 20px;">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2 id="fileContentTitle">📄 File Content</h2>
+                                <button class="btn btn-secondary" onclick="closeFileViewer()" style="width: auto; padding: 6px 16px;">Close</button>
+                            </div>
+                            <div class="panel-body">
+                                <div class="output-box" id="fileContentDisplay" style="max-height: 500px; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; white-space: pre; overflow-x: auto;"></div>
                             </div>
                         </div>
                     </div>
@@ -867,6 +1324,11 @@
                 if (msg.type === 'output') {
                     term.write(msg.data);
                     
+                    // Auto-scroll to bottom
+                    setTimeout(() => {
+                        term.scrollToBottom();
+                    }, 10);
+                    
                     // Detect successful login
                     if (msg.data.includes('Last login') || msg.data.includes('$') || msg.data.includes('#')) {
                         if (!isConnected) {
@@ -880,6 +1342,9 @@
                 } else if (msg.type === 'error') {
                     term.writeln(`\x1b[31mError: ${msg.data}\x1b[0m`);
                     logToTerminal(msg.data, 'err');
+                    setTimeout(() => {
+                        term.scrollToBottom();
+                    }, 10);
                 }
             };
             
@@ -913,7 +1378,17 @@
             if (terminalMode !== 'shell') {
                 switchTerminalMode('shell');
             }
-            term.focus();
+            
+            // Ensure terminal is visible
+            if (terminalCollapsed) {
+                toggleTerminal();
+            }
+            
+            // Scroll to bottom and focus
+            setTimeout(() => {
+                term.scrollToBottom();
+                term.focus();
+            }, 50);
         }
         
         function submitJob() {
@@ -1002,6 +1477,133 @@
             event.currentTarget.classList.add('active');
         }
         
+        // SSH Profiles Management
+        async function loadProfiles() {
+            try {
+                const response = await fetch('/api/profiles');
+                const data = await response.json();
+                
+                if (data.success && data.profiles.length > 0) {
+                    const profilesList = document.getElementById('profilesList');
+                    profilesList.innerHTML = data.profiles.map(profile => `
+                        <div class="profile-card">
+                            <div class="profile-card-header">
+                                <span class="profile-card-name">${escapeHtml(profile.name)}</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">
+                                    ${profile.last_used ? new Date(profile.last_used).toLocaleDateString() : 'Never'}
+                                </span>
+                            </div>
+                            <div class="profile-card-info">
+                                ${escapeHtml(profile.user)}@${escapeHtml(profile.host)}:${profile.port}
+                            </div>
+                            <div class="profile-card-actions">
+                                <button class="profile-btn" onclick="connectWithProfile(${profile.id}, '${escapeHtml(profile.host)}', '${escapeHtml(profile.user)}', ${profile.port})">
+                                    🔗 Connect
+                                </button>
+                                <button class="profile-btn" onclick="editProfile(${profile.id})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="profile-btn delete" onclick="deleteProfile(${profile.id})">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('profilesList').innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">
+                            No saved profiles yet. Save your first connection!
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading profiles:', error);
+                showToast('Failed to load profiles', 'error');
+            }
+        }
+        
+        function toggleSaveProfileModal() {
+            const modal = document.getElementById('saveProfileModal');
+            modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        async function saveCurrentProfile() {
+            const name = document.getElementById('profileName').value.trim();
+            const host = document.getElementById('host').value.trim();
+            const user = document.getElementById('user').value.trim();
+            const port = parseInt(document.getElementById('port').value) || 22;
+            
+            if (!name) {
+                showToast('Please enter a profile name', 'error');
+                return;
+            }
+            
+            if (!host || !user) {
+                showToast('Please fill in host and username first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/profiles/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, host, user, port })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`Profile "${name}" saved!`, 'success');
+                    document.getElementById('profileName').value = '';
+                    toggleSaveProfileModal();
+                    loadProfiles();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Save profile error:', error);
+                showToast('Failed to save profile', 'error');
+            }
+        }
+        
+        async function deleteProfile(profileId) {
+            if (!confirm('Delete this profile?')) return;
+            
+            try {
+                const response = await fetch(`/api/profiles/${profileId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Profile deleted', 'success');
+                    loadProfiles();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Delete profile error:', error);
+                showToast('Failed to delete profile', 'error');
+            }
+        }
+        
+        function connectWithProfile(profileId, host, user, port) {
+            // Populate the connection form
+            document.getElementById('host').value = host;
+            document.getElementById('user').value = user;
+            document.getElementById('port').value = port;
+            
+            // Connect
+            openTerminalAndConnect();
+            
+            showToast(`Connecting to ${user}@${host}...`, 'success');
+        }
+        
+        function editProfile(profileId) {
+            showToast('Edit feature coming soon', 'info');
+        }
+        
         function switchTerminalMode(mode) {
             terminalMode = mode;
             
@@ -1023,7 +1625,10 @@
             terminalCollapsed = !terminalCollapsed;
             document.getElementById('terminalBody').classList.toggle('collapsed', terminalCollapsed);
             if (!terminalCollapsed && fitAddon) {
-                setTimeout(() => fitAddon.fit(), 100);
+                setTimeout(() => {
+                    fitAddon.fit();
+                    term.scrollToBottom();
+                }, 100);
             }
         }
         
@@ -1075,9 +1680,12 @@
         document.addEventListener('mousemove', (e) => {
             if (!isResizing) return;
             const diff = startY - e.clientY;
-            const newHeight = Math.max(100, Math.min(600, startHeight + diff));
+            const newHeight = Math.max(100, Math.min(800, startHeight + diff));
             document.getElementById('terminalBody').style.height = newHeight + 'px';
-            if (fitAddon) fitAddon.fit();
+            if (fitAddon) {
+                fitAddon.fit();
+                term.scrollToBottom();
+            }
         });
         
         document.addEventListener('mouseup', () => {
@@ -1089,6 +1697,522 @@
         
         // Init
         document.addEventListener('DOMContentLoaded', initTerminal);
+        
+        // File Management Functions
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const statusDiv = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files.length) {
+                statusDiv.textContent = '❌ Please select a file';
+                statusDiv.style.color = 'var(--error)';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            statusDiv.textContent = '⏳ Uploading...';
+            statusDiv.style.color = 'var(--warning)';
+            
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.textContent = `✓ File uploaded: ${data.filename}`;
+                    statusDiv.style.color = 'var(--success)';
+                    fileInput.value = '';
+                    loadFiles();
+                    showToast('File uploaded successfully', 'success');
+                } else {
+                    statusDiv.textContent = `❌ ${data.message}`;
+                    statusDiv.style.color = 'var(--error)';
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                statusDiv.textContent = `❌ Upload failed: ${error.message}`;
+                statusDiv.style.color = 'var(--error)';
+                showToast('Upload failed', 'error');
+            }
+        }
+        
+        async function loadFiles() {
+            const filesList = document.getElementById('filesList');
+            filesList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading...</div>';
+            
+            try {
+                const response = await fetch('/api/files');
+                const data = await response.json();
+                
+                if (data.success && data.files.length > 0) {
+                    let html = '<div style="display: grid; gap: 8px;">';
+                    
+                    data.files.forEach(file => {
+                        const fileSize = formatFileSize(file.size);
+                        const date = new Date(file.modified * 1000).toLocaleString();
+                        
+                        html += `
+                            <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 12px; background: var(--bg-tertiary); border-radius: 6px; border: 1px solid var(--border);">
+                                <div>
+                                    <div style="font-weight: 500; color: var(--accent);">📄 ${escapeHtml(file.name)}</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">${fileSize} • ${date}</div>
+                                </div>
+                                <a href="${file.url}" download class="btn btn-secondary" style="padding: 6px 12px; width: auto;">
+                                    ⬇️ Download
+                                </a>
+                                <button class="btn btn-danger" style="padding: 6px 12px; width: auto;" onclick="deleteFile('${escapeHtml(file.name)}')">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    filesList.innerHTML = html;
+                } else {
+                    filesList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">No files uploaded yet</div>';
+                }
+            } catch (error) {
+                filesList.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--error);">Error loading files: ${error.message}</div>`;
+                showToast('Failed to load files', 'error');
+            }
+        }
+        
+        async function deleteFile(filename) {
+            if (!confirm(`Delete file: ${filename}?`)) return;
+            
+            try {
+                const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('File deleted successfully', 'success');
+                    loadFiles();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Failed to delete file', 'error');
+            }
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        // Enhanced File Management Functions
+        async function browseDirectory() {
+            const path = document.getElementById('browsePath').value.trim() || '~';
+            const browser = document.getElementById('filesBrowser');
+            
+            browser.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading...</div>';
+            
+            try {
+                const cmd = `ls -la ${path}`;
+                runCommand(cmd);
+                
+                // Simulate getting the output (in real implementation, this would come from backend)
+                setTimeout(() => {
+                    showToast(`Browsing ${path} - check terminal for output`, 'success');
+                }, 500);
+            } catch (error) {
+                browser.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--error);">Error: ${error.message}</div>`;
+                showToast('Failed to browse directory', 'error');
+            }
+        }
+        
+        async function browseHome() {
+            const cmd = 'echo $HOME';
+            runCommand(cmd);
+            setTimeout(() => {
+                runCommand('ls -la ~');
+            }, 500);
+            showToast('Browsing home directory', 'success');
+        }
+        
+        async function browseScratch() {
+            const cmd = 'ls -la ~/scratch';
+            runCommand(cmd);
+            showToast('Browsing scratch directory', 'success');
+        }
+        
+        async function uploadFileToRemote() {
+            const fileInput = document.getElementById('fileInput');
+            const remotePath = document.getElementById('uploadRemotePath').value.trim();
+            const statusDiv = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files.length) {
+                statusDiv.textContent = '❌ Please select a file';
+                statusDiv.style.color = 'var(--error)';
+                return;
+            }
+            
+            if (!remotePath) {
+                statusDiv.textContent = '❌ Please enter remote path';
+                statusDiv.style.color = 'var(--error)';
+                return;
+            }
+            
+            statusDiv.textContent = '⏳ Uploading to remote server...';
+            statusDiv.style.color = 'var(--warning)';
+            
+            const file = fileInput.files[0];
+            showToast(`Uploading ${file.name} to ${remotePath}`, 'success');
+            
+            // This would require backend implementation with SCP
+            statusDiv.textContent = '⚠️ Use terminal: scp local_file user@host:remote_path';
+            statusDiv.style.color = 'var(--warning)';
+        }
+        
+        async function downloadFile() {
+            const remotePath = document.getElementById('downloadRemotePath').value.trim();
+            const statusDiv = document.getElementById('downloadStatus');
+            
+            if (!remotePath) {
+                statusDiv.textContent = '❌ Please enter remote file path';
+                statusDiv.style.color = 'var(--error)';
+                return;
+            }
+            
+            statusDiv.textContent = '⏳ Downloading...';
+            statusDiv.style.color = 'var(--warning)';
+            
+            showToast(`Download initiated for ${remotePath}`, 'success');
+            
+            // This would require backend implementation with SCP
+            statusDiv.textContent = '⚠️ Use terminal: scp user@host:remote_file local_path';
+            statusDiv.style.color = 'var(--warning)';
+        }
+        
+        async function searchFiles() {
+            const path = document.getElementById('searchPath').value.trim() || '~';
+            const pattern = document.getElementById('searchPattern').value.trim();
+            const depthOnly = document.getElementById('searchDepth').checked;
+            
+            if (!pattern) {
+                showToast('Please enter a search pattern', 'error');
+                return;
+            }
+            
+            let cmd;
+            if (depthOnly) {
+                cmd = `find ${path} -maxdepth 1 -name "*${pattern}*" | head -50`;
+            } else {
+                cmd = `find ${path} -name "*${pattern}*" | head -50`;
+            }
+            
+            runCommand(cmd);
+            showToast(`Searching for "${pattern}" in ${path}`, 'success');
+        }
+        
+        async function viewFileContent() {
+            const filePath = document.getElementById('viewFilePath').value.trim();
+            const lines = document.getElementById('viewLines').value || 50;
+            
+            if (!filePath) {
+                showToast('Please enter a file path', 'error');
+                return;
+            }
+            
+            const cmd = `head -n ${lines} ${filePath}`;
+            runCommand(cmd);
+            showToast(`Viewing ${filePath} (${lines} lines)`, 'success');
+            
+            // Show file content viewer
+            document.getElementById('fileContentViewer').style.display = 'block';
+            document.getElementById('fileContentTitle').textContent = `📄 ${filePath}`;
+        }
+        
+        function closeFileViewer() {
+            document.getElementById('fileContentViewer').style.display = 'none';
+        }
+        
+        async function createDirectory() {
+            const path = document.getElementById('createDirPath').value.trim();
+            
+            if (!path) {
+                showToast('Please enter a directory path', 'error');
+                return;
+            }
+            
+            const cmd = `mkdir -p ${path} && echo "✓ Directory created: ${path}"`;
+            runCommand(cmd);
+            showToast(`Creating directory: ${path}`, 'success');
+        }
+        
+        async function deleteFileOrDir() {
+            const path = document.getElementById('deletePath').value.trim();
+            const isDir = document.getElementById('deleteIsDir').checked;
+            
+            if (!path) {
+                showToast('Please enter a path', 'error');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete: ${path}?`)) {
+                return;
+            }
+            
+            const cmd = isDir 
+                ? `rm -rf ${path} && echo "✓ Deleted: ${path}"`
+                : `rm ${path} && echo "✓ Deleted: ${path}"`;
+            
+            runCommand(cmd);
+            showToast(`Deleting: ${path}`, 'success');
+        }
+        
+        async function renameFile() {
+            const oldPath = document.getElementById('renameOldPath').value.trim();
+            const newPath = document.getElementById('renameNewPath').value.trim();
+            
+            if (!oldPath || !newPath) {
+                showToast('Please enter both old and new paths', 'error');
+                return;
+            }
+            
+            const cmd = `mv ${oldPath} ${newPath} && echo "✓ Renamed: ${oldPath} → ${newPath}"`;
+            runCommand(cmd);
+            showToast(`Renaming: ${oldPath} → ${newPath}`, 'success');
+        }
+        
+        async function editFile() {
+            const filePath = document.getElementById('editFilePath').value.trim() || '~/';
+            const fileName = document.getElementById('editFileName').value.trim();
+            
+            if (!fileName) {
+                showToast('Please enter a file name', 'error');
+                return;
+            }
+            
+            // Make sure terminal is visible
+            if (terminalCollapsed) {
+                toggleTerminal();
+            }
+            switchTerminalMode('shell');
+            
+            const cmd = `nano ${filePath}/${fileName}`;
+            runCommand(cmd);
+            showToast('Opening nano editor...', 'success');
+        }
+        
+        async function checkDiskQuota() {
+            const path = document.getElementById('diskQuotaPath').value.trim() || '~';
+            
+            runCommand(`du -h ${path} | sort -hr | head -20`);
+            
+            setTimeout(() => {
+                runCommand('lfs quota -h ~/');
+            }, 1000);
+            
+            showToast(`Checking disk usage for ${path}`, 'success');
+        }
+        
+        // SLURM Dashboard Functions
+        let dashboardRefreshInterval = null;
+        
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/slurm/dashboard');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showToast('Failed to load dashboard data', 'error');
+                    return;
+                }
+                
+                // Update stats
+                document.getElementById('totalJobsCount').textContent = data.total_jobs;
+                const runningJobs = data.jobs.filter(j => j.status === 'RUNNING').length;
+                const pendingJobs = data.jobs.filter(j => j.status === 'PENDING').length;
+                document.getElementById('runningJobsCount').textContent = runningJobs;
+                document.getElementById('pendingJobsCount').textContent = pendingJobs;
+                document.getElementById('totalNodesCount').textContent = data.total_nodes;
+                
+                // Render jobs
+                renderJobCards(data.jobs);
+                
+                // Render nodes
+                renderNodesTable(data.nodes);
+                
+                // Render GPU info
+                renderGpuInfo(data.gpu_info);
+                
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                showToast('Error loading dashboard', 'error');
+            }
+        }
+        
+        function renderJobCards(jobs) {
+            const container = document.getElementById('jobsContainer');
+            
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No jobs found</div>';
+                return;
+            }
+            
+            container.innerHTML = jobs.map(job => `
+                <div class="job-card">
+                    <div class="job-status-badge ${job.status_color}">
+                        ${job.status.substring(0, 3)}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <h3 style="margin: 0; color: var(--accent);">Job #${job.job_id} - ${escapeHtml(job.name)}</h3>
+                            <span style="display: inline-block; padding: 4px 8px; background: var(--bg-card); border-radius: 4px; font-size: 12px; color: var(--text-secondary);">
+                                ${job.status}
+                            </span>
+                        </div>
+                        <div class="job-info">
+                            <div class="job-info-item">
+                                <label>Nodes</label>
+                                <value>${escapeHtml(job.nodes)}</value>
+                            </div>
+                            <div class="job-info-item">
+                                <label>CPUs</label>
+                                <value>${job.cpus}</value>
+                            </div>
+                            <div class="job-info-item">
+                                <label>GPUs</label>
+                                <value>${job.gpus !== '0' ? job.gpus : 'None'}</value>
+                            </div>
+                            <div class="job-info-item">
+                                <label>Elapsed</label>
+                                <value>${job.elapsed_time || 'N/A'}</value>
+                            </div>
+                            ${job.reason ? `
+                            <div class="job-info-item">
+                                <label>Reason</label>
+                                <value style="color: var(--warning); font-size: 12px;">${escapeHtml(job.reason)}</value>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-secondary" onclick="jobDetailInfo('${job.job_id}')" style="font-size: 11px; padding: 6px 10px;">Info</button>
+                        <button class="btn btn-danger" onclick="quickCancel('${job.job_id}')" style="font-size: 11px; padding: 6px 10px;">Cancel</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderNodesTable(nodes) {
+            const tbody = document.getElementById('nodesTableBody');
+            
+            if (!nodes || nodes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">No nodes available</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = nodes.map(node => `
+                <tr style="border-bottom: 1px solid var(--border); hover: {background: var(--bg-tertiary);}">
+                    <td style="padding: 12px; color: var(--accent); font-weight: 500;">${escapeHtml(node.name)}</td>
+                    <td style="padding: 12px;">
+                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; background: ${node.state_color === 'success' ? 'rgba(0, 255, 136, 0.2)' : 'rgba(255, 165, 2, 0.2)'}; color: ${node.state_color === 'success' ? 'var(--success)' : 'var(--warning)'};">
+                            ${node.state}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">${node.cpus}</td>
+                    <td style="padding: 12px;">${node.memory}</td>
+                    <td style="padding: 12px; color: ${node.gpus !== '0' ? 'var(--accent)' : 'var(--text-muted)'};">${node.gpus !== '0' ? `${node.gpus} GPUs` : 'None'}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderGpuInfo(gpuInfo) {
+            const container = document.getElementById('gpuContainer');
+            
+            if (!gpuInfo || gpuInfo.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No GPU information available</div>';
+                return;
+            }
+            
+            container.innerHTML = gpuInfo.map(gpu => `
+                <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center;">
+                    <div style="font-size: 32px;">🎮</div>
+                    <div>
+                        <h4 style="margin: 0 0 8px 0; color: var(--accent);">${escapeHtml(gpu.node)}</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 13px;">
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 11px;">GPUs</span>
+                                <div style="color: var(--accent); font-weight: bold;">${gpu.gpus}</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 11px;">State</span>
+                                <div style="color: ${gpu.state === 'idle' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${gpu.state}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function switchDashboardView(view) {
+            // Hide all views
+            document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.dashboard-subtab').forEach(t => t.classList.remove('active'));
+            
+            // Show selected view and mark button active
+            document.getElementById(view + '-view').classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function toggleAutoRefresh() {
+            const isChecked = document.getElementById('autoRefresh').checked;
+            
+            if (isChecked) {
+                // Refresh immediately
+                loadDashboard();
+                // Then every 10 seconds
+                dashboardRefreshInterval = setInterval(loadDashboard, 10000);
+                showToast('Auto-refresh enabled (10s)', 'success');
+            } else {
+                if (dashboardRefreshInterval) {
+                    clearInterval(dashboardRefreshInterval);
+                }
+                showToast('Auto-refresh disabled', 'success');
+            }
+        }
+        
+        function jobDetailInfo(jobId) {
+            document.getElementById('jobIdInfo').value = jobId;
+            jobInfo();
+        }
+        
+        function quickCancel(jobId) {
+            if (confirm(`Cancel job ${jobId}?`)) {
+                document.getElementById('jobIdCancel').value = jobId;
+                cancelJob();
+            }
+        }
+        
+        // Load dashboard on SLURM tab switch
+        const originalSwitchTab = window.switchTab;
+        window.switchTab = function(tabName) {
+            originalSwitchTab(tabName);
+            if (tabName === 'slurm') {
+                loadDashboard();
+            }
+        };
+        
+        // Initial load when page opens
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+            loadProfiles();
+        });
     </script>
 </body>
 </html>
