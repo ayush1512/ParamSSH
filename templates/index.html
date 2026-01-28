@@ -1197,14 +1197,60 @@
                 <!-- System Tab -->
                 <div id="system" class="tab-content">
                     <h2 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600;">System Information</h2>
+                    
+                    <!-- System Stats Cards -->
+                    <div class="stats-grid" style="margin-bottom: 24px;">
+                        <div class="stat-card" id="sysOsCard">
+                            <div class="stat-value" style="font-size: 18px; color: var(--text-primary);">-</div>
+                            <div class="stat-label">Operating System</div>
+                        </div>
+                        <div class="stat-card" id="sysHostCard">
+                            <div class="stat-value" style="font-size: 18px; color: var(--accent-bright);">-</div>
+                            <div class="stat-label">Hostname</div>
+                        </div>
+                        <div class="stat-card" id="sysCpuCard">
+                            <div class="stat-value" style="font-size: 18px; color: var(--success);">-</div>
+                            <div class="stat-label">CPU Cores</div>
+                        </div>
+                        <div class="stat-card" id="sysMemCard">
+                            <div class="stat-value" style="font-size: 18px; color: var(--warning);">-</div>
+                            <div class="stat-label">Memory</div>
+                        </div>
+                    </div>
+                    
                     <div class="panel">
                         <div class="panel-header">
                             <h2>Quick Actions</h2>
                             <div class="panel-actions">
+                                <button class="btn btn-secondary" onclick="getSystemInfo()">Refresh Info</button>
                                 <button class="btn btn-secondary" onclick="runCommand('uname -a')">OS Info</button>
                                 <button class="btn btn-secondary" onclick="runCommand('df -h')">Disk Usage</button>
                                 <button class="btn btn-secondary" onclick="runCommand('free -h')">Memory</button>
                                 <button class="btn btn-secondary" onclick="runCommand('nvidia-smi')">GPU Status</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="cards-grid">
+                                <div class="card">
+                                    <h4>System Load</h4>
+                                    <button class="btn btn-secondary" onclick="runCommand('uptime')">Check Uptime</button>
+                                    <button class="btn btn-secondary" onclick="runCommand('top -bn1 | head -20')" style="margin-top: 8px;">Top Processes</button>
+                                </div>
+                                <div class="card">
+                                    <h4>Network</h4>
+                                    <button class="btn btn-secondary" onclick="runCommand('hostname -I')">IP Address</button>
+                                    <button class="btn btn-secondary" onclick="runCommand('netstat -tuln | head -20')" style="margin-top: 8px;">Open Ports</button>
+                                </div>
+                                <div class="card">
+                                    <h4>Environment</h4>
+                                    <button class="btn btn-secondary" onclick="runCommand('echo $PATH | tr \":\" \"\\n\"')">View PATH</button>
+                                    <button class="btn btn-secondary" onclick="runCommand('module list')" style="margin-top: 8px;">Loaded Modules</button>
+                                </div>
+                                <div class="card">
+                                    <h4>Storage</h4>
+                                    <button class="btn btn-secondary" onclick="runCommand('lfs quota -h ~/')">Quota</button>
+                                    <button class="btn btn-secondary" onclick="runCommand('du -sh ~/* 2>/dev/null | sort -hr | head -10')" style="margin-top: 8px;">Largest Dirs</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1213,20 +1259,23 @@
                 <!-- Files Tab -->
                 <div id="files" class="tab-content active">
                     <!-- File Browser Section -->
-                    <div class="panel" style="margin-bottom: 20px;">
-                        <div class="panel-header">
-                            <h2>📁 File Browser</h2>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <input type="text" id="browsePath" placeholder="Enter path (e.g., ~, ~/scratch)" 
-                                    style="padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px; width: 300px;">
-                                <button class="btn btn-primary" onclick="browseDirectory()" style="width: auto; padding: 6px 16px;">Browse</button>
-                                <button class="btn btn-secondary" onclick="browseHome()" style="width: auto; padding: 6px 16px;">Home</button>
-                                <button class="btn btn-secondary" onclick="browseScratch()" style="width: auto; padding: 6px 16px;">Scratch</button>
+                    <h2 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 600;">File Manager</h2>
+                    <div class="panel" style="margin-bottom: 24px;" id="browseFilesPanel">
+                        <div class="panel-header" style="cursor: pointer;" onclick="toggleBrowseFilesPanel()">
+                            <h2 style="display: flex; align-items: center; gap: 8px;">
+                                <span id="browseFilesPanelIcon" style="transition: transform 0.2s;">▼</span>
+                                Browse Files
+                            </h2>
+                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                                <input type="text" id="browsePath" placeholder="Enter path (e.g., ~, ~/home)" 
+                                    style="padding: 10px 14px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 14px; width: 280px;">
+                                <button class="btn btn-primary" onclick="browseDirectory()" style="width: auto; padding: 10px 20px;">Browse</button>
+                                <button class="btn btn-secondary" onclick="browseHome()" style="width: auto; padding: 10px 16px;">Home</button>
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body" id="browseFilesPanelBody">
                             <div id="filesBrowser" style="overflow-x: auto;">
-                                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                <div style="text-align: center; padding: 48px; color: var(--text-muted);">
                                     Enter a path and click Browse to view files
                                 </div>
                             </div>
@@ -1236,33 +1285,33 @@
                     <div class="cards-grid">
                         <!-- File Upload Card -->
                         <div class="card">
-                            <h4>⬆️ Upload File</h4>
+                            <h4>Upload File</h4>
                             <div class="form-group">
                                 <label>Local File</label>
-                                <input type="file" id="fileInput" style="padding: 8px; font-size: 12px;">
+                                <input type="file" id="fileInput" style="padding: 8px; font-size: 13px; width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
                             </div>
                             <div class="form-group">
                                 <label>Remote Path</label>
                                 <input type="text" id="uploadRemotePath" placeholder="~/myfile.txt" value="~/uploads/">
                             </div>
                             <button class="btn btn-primary" onclick="uploadFileToRemote()">Upload</button>
-                            <div id="uploadStatus" style="margin-top: 8px; font-size: 12px;"></div>
+                            <div id="uploadStatus" style="margin-top: 10px; font-size: 13px;"></div>
                         </div>
                         
                         <!-- File Download Card -->
                         <div class="card">
-                            <h4>⬇️ Download File</h4>
+                            <h4>Download File</h4>
                             <div class="form-group">
                                 <label>Remote File Path</label>
                                 <input type="text" id="downloadRemotePath" placeholder="~/myfile.txt">
                             </div>
                             <button class="btn btn-primary" onclick="downloadFile()">Download</button>
-                            <div id="downloadStatus" style="margin-top: 8px; font-size: 12px;"></div>
+                            <div id="downloadStatus" style="margin-top: 10px; font-size: 13px;"></div>
                         </div>
                         
                         <!-- File Search Card -->
                         <div class="card">
-                            <h4>🔍 Search Files</h4>
+                            <h4>Search Files</h4>
                             <div class="form-group">
                                 <label>Search Path</label>
                                 <input type="text" id="searchPath" placeholder="~" value="~">
@@ -1272,8 +1321,8 @@
                                 <input type="text" id="searchPattern" placeholder="*.py">
                             </div>
                             <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="checkbox" id="searchDepth">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="checkbox" id="searchDepth" style="accent-color: var(--accent-bright);">
                                     <span>Current directory only</span>
                                 </label>
                             </div>
@@ -1282,7 +1331,7 @@
                         
                         <!-- View File Content Card -->
                         <div class="card">
-                            <h4>👁️ View File Content</h4>
+                            <h4>View File Content</h4>
                             <div class="form-group">
                                 <label>File Path</label>
                                 <input type="text" id="viewFilePath" placeholder="~/script.py">
@@ -1296,7 +1345,7 @@
                         
                         <!-- Create Directory Card -->
                         <div class="card">
-                            <h4>📁 Create Directory</h4>
+                            <h4>Create Directory</h4>
                             <div class="form-group">
                                 <label>Directory Path</label>
                                 <input type="text" id="createDirPath" placeholder="~/new_folder">
@@ -1306,14 +1355,14 @@
                         
                         <!-- Delete File/Directory Card -->
                         <div class="card">
-                            <h4>🗑️ Delete File/Directory</h4>
+                            <h4>Delete File/Directory</h4>
                             <div class="form-group">
                                 <label>Path</label>
                                 <input type="text" id="deletePath" placeholder="~/file_or_folder">
                             </div>
                             <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="checkbox" id="deleteIsDir">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="checkbox" id="deleteIsDir" style="accent-color: var(--accent-bright);">
                                     <span>Is Directory</span>
                                 </label>
                             </div>
@@ -1322,7 +1371,7 @@
                         
                         <!-- Rename/Move Card -->
                         <div class="card">
-                            <h4>✏️ Rename/Move</h4>
+                            <h4>Rename / Move</h4>
                             <div class="form-group">
                                 <label>Old Path</label>
                                 <input type="text" id="renameOldPath" placeholder="~/oldname.txt">
@@ -1336,7 +1385,7 @@
                         
                         <!-- Edit File Card -->
                         <div class="card">
-                            <h4>✏️ Edit File</h4>
+                            <h4>Edit File (nano)</h4>
                             <div class="form-group">
                                 <label>Directory Path</label>
                                 <input type="text" id="editFilePath" placeholder="~/">
@@ -1346,26 +1395,28 @@
                                 <input type="text" id="editFileName" placeholder="script.py">
                             </div>
                             <button class="btn btn-primary" onclick="editFile()">Edit in Terminal</button>
-                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Opens nano editor in terminal</p>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">Opens nano editor in terminal</p>
                         </div>
                         
                         <!-- Disk Usage Card -->
                         <div class="card" style="grid-column: 1 / -1;">
-                            <h4>💾 Disk Usage & Quota</h4>
-                            <div class="form-group">
-                                <label>Path</label>
-                                <input type="text" id="diskQuotaPath" placeholder="~" value="~">
+                            <h4>Disk Usage & Quota</h4>
+                            <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                                    <label>Path</label>
+                                    <input type="text" id="diskQuotaPath" placeholder="~" value="~">
+                                </div>
+                                <button class="btn btn-primary" onclick="checkDiskQuota()" style="width: auto; padding: 12px 24px;">Check Usage</button>
                             </div>
-                            <button class="btn btn-primary" onclick="checkDiskQuota()">Check Usage</button>
                         </div>
                     </div>
                     
                     <!-- File Content Viewer -->
-                    <div id="fileContentViewer" style="display: none; margin-top: 20px;">
+                    <div id="fileContentViewer" style="display: none; margin-top: 24px;">
                         <div class="panel">
                             <div class="panel-header">
-                                <h2 id="fileContentTitle">📄 File Content</h2>
-                                <button class="btn btn-secondary" onclick="closeFileViewer()" style="width: auto; padding: 6px 16px;">Close</button>
+                                <h2 id="fileContentTitle">File Content</h2>
+                                <button class="btn btn-secondary" onclick="closeFileViewer()" style="width: auto; padding: 8px 16px;">Close</button>
                             </div>
                             <div class="panel-body">
                                 <div class="output-box" id="fileContentDisplay" style="max-height: 500px; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; white-space: pre; overflow-x: auto;"></div>
@@ -1666,6 +1717,76 @@
             }
         }
         
+        // System Information Functions
+        async function getSystemInfo() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                showToast('Not connected to SSH', 'error');
+                return;
+            }
+            
+            showToast('Fetching system info...', 'info');
+            
+            // Get OS info
+            runCommandSilent('uname -s', (output) => {
+                const osCard = document.getElementById('sysOsCard');
+                const lines = output.split('\n').filter(l => 
+                    l.trim() !== '' && 
+                    !l.includes('$') && 
+                    !l.includes('#') && 
+                    !l.includes('uname')
+                );
+                if (lines.length > 0) {
+                    osCard.querySelector('.stat-value').textContent = lines[0].trim();
+                }
+            });
+            
+            // Get hostname
+            runCommandSilent('hostname', (output) => {
+                const hostCard = document.getElementById('sysHostCard');
+                const lines = output.split('\n').filter(l => 
+                    l.trim() !== '' && 
+                    !l.includes('$') && 
+                    !l.includes('#') && 
+                    !l.includes('hostname')
+                );
+                if (lines.length > 0) {
+                    hostCard.querySelector('.stat-value').textContent = lines[0].trim();
+                }
+            });
+            
+            // Get CPU cores
+            runCommandSilent('nproc', (output) => {
+                const cpuCard = document.getElementById('sysCpuCard');
+                const lines = output.split('\n').filter(l => 
+                    l.trim() !== '' && 
+                    !l.includes('$') && 
+                    !l.includes('#') && 
+                    !l.includes('nproc') &&
+                    /^\d+$/.test(l.trim())
+                );
+                if (lines.length > 0) {
+                    cpuCard.querySelector('.stat-value').textContent = lines[0].trim() + ' cores';
+                }
+            });
+            
+            // Get memory info
+            runCommandSilent('free -h | grep Mem', (output) => {
+                const memCard = document.getElementById('sysMemCard');
+                const lines = output.split('\n').filter(l => 
+                    l.trim() !== '' && 
+                    !l.includes('$') && 
+                    !l.includes('#') && 
+                    l.includes('Mem')
+                );
+                if (lines.length > 0) {
+                    const parts = lines[0].trim().split(/\s+/);
+                    if (parts.length >= 2) {
+                        memCard.querySelector('.stat-value').textContent = parts[1]; // Total memory
+                    }
+                }
+            });
+        }
+        
         function updateConnectionStatus(connected) {
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('statusText');
@@ -1687,6 +1808,13 @@
             
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
+            
+            // Load data when switching to specific tabs
+            if (tabName === 'slurm') {
+                loadDashboard();
+            } else if (tabName === 'system') {
+                getSystemInfo();
+            }
         }
         
         // SSH Profiles Management
@@ -2030,40 +2158,187 @@
             return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
         }
         
+        // Parse ls -la output into file objects
+        function parseLsOutput(output, currentPath) {
+            const files = [];
+            const lines = output.split('\n');
+            
+            // Strip ANSI escape codes
+            const stripAnsi = (str) => str.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '').replace(/\x1B\].*?\x07/g, '');
+            
+            for (const line of lines) {
+                const cleanLine = stripAnsi(line);
+                
+                // Skip header, prompt, command echo, and empty lines
+                if (cleanLine.trim() === '' || 
+                    cleanLine.includes('total') || 
+                    cleanLine.includes('$') || 
+                    cleanLine.includes('#') || 
+                    cleanLine.includes('ls -la') ||
+                    cleanLine.includes('ls: ') ||
+                    cleanLine.trim().startsWith('%')) {
+                    continue;
+                }
+                
+                // Parse ls -la format: drwxr-xr-x 2 user group 4096 Jan 1 12:00 filename
+                // Or: drwxr-xr-x 2 user group 4096 Jan 1 2024 filename (for older files)
+                const match = cleanLine.trim().match(/^([drwxlsStT\-]{10})\s+(\d+)\s+(\S+)\s+(\S+)\s+(\d+)\s+(\w{3})\s+(\d{1,2})\s+([\d:]+|\d{4})\s+(.+)$/);
+                
+                if (match) {
+                    const permissions = match[1];
+                    const size = match[5];
+                    const month = match[6];
+                    const day = match[7];
+                    const timeOrYear = match[8];
+                    const name = match[9].trim();
+                    
+                    // Skip . and ..
+                    if (name === '.' || name === '..') continue;
+                    
+                    const isDir = permissions.startsWith('d');
+                    const isLink = permissions.startsWith('l');
+                    
+                    // For symlinks, extract the actual name (before ' -> ')
+                    const displayName = isLink ? name.split(' -> ')[0] : name;
+                    const linkTarget = isLink && name.includes(' -> ') ? name.split(' -> ')[1] : null;
+                    
+                    files.push({
+                        name: displayName,
+                        linkTarget: linkTarget,
+                        permissions: permissions,
+                        size: size,
+                        date: `${month} ${day} ${timeOrYear}`,
+                        isDir: isDir,
+                        isLink: isLink,
+                        path: currentPath.replace(/\/$/, '') + '/' + displayName
+                    });
+                }
+            }
+            return files;
+        }
+        
+        // Render file browser table
+        function renderFileBrowser(files, currentPath) {
+            const browser = document.getElementById('filesBrowser');
+            
+            if (!files || files.length === 0) {
+                browser.innerHTML = '<div style="text-align: center; padding: 48px; color: var(--text-muted);">Directory is empty or no files found</div>';
+                return;
+            }
+            
+            // Sort: directories first, then files alphabetically
+            files.sort((a, b) => {
+                if (a.isDir && !b.isDir) return -1;
+                if (!a.isDir && b.isDir) return 1;
+                return a.name.localeCompare(b.name);
+            });
+            
+            let html = `
+                <div style="margin-bottom: 12px; padding: 8px 12px; background: var(--bg-tertiary); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);">
+                    ${escapeHtml(currentPath)}
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border); text-align: left;">
+                            <th style="padding: 12px 8px; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Name</th>
+                            <th style="padding: 12px 8px; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Size</th>
+                            <th style="padding: 12px 8px; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Permissions</th>
+                            <th style="padding: 12px 8px; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Modified</th>
+                            <th style="padding: 12px 8px; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // Add parent directory link
+            const parentPath = currentPath.split('/').slice(0, -1).join('/') || '~';
+            html += `
+                <tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="navigateToPath('${parentPath}')">
+                    <td style="padding: 10px 8px; color: var(--text-muted);">
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--accent-bright);">↩</span> ..
+                        </span>
+                    </td>
+                    <td style="padding: 10px 8px; color: var(--text-muted);">-</td>
+                    <td style="padding: 10px 8px; color: var(--text-muted);">-</td>
+                    <td style="padding: 10px 8px; color: var(--text-muted);">-</td>
+                    <td style="padding: 10px 8px;">-</td>
+                </tr>
+            `;
+            
+            for (const file of files) {
+                const icon = file.isDir ? '📁' : (file.isLink ? '🔗' : '📄');
+                const colorStyle = file.isDir ? 'color: var(--accent-bright); cursor: pointer;' : 'color: var(--text-primary);';
+                const clickHandler = file.isDir ? `onclick="navigateToPath('${escapeHtml(file.path).replace(/'/g, "\\'")}')"` : '';
+                const linkInfo = file.linkTarget ? ` → ${escapeHtml(file.linkTarget)}` : '';
+                
+                html += `
+                    <tr style="border-bottom: 1px solid var(--border);" ${clickHandler}>
+                        <td style="padding: 10px 8px; ${colorStyle}">
+                            <span style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 14px;">${icon}</span>
+                                <span>${escapeHtml(file.name)}</span>
+                                ${file.isLink ? `<span style="color: var(--text-muted); font-size: 11px;">${linkInfo}</span>` : ''}
+                            </span>
+                        </td>
+                        <td style="padding: 10px 8px; color: var(--text-secondary); font-family: var(--font-mono); font-size: 12px;">${file.isDir ? '-' : formatFileSize(parseInt(file.size) || 0)}</td>
+                        <td style="padding: 10px 8px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">${file.permissions}</td>
+                        <td style="padding: 10px 8px; color: var(--text-muted); font-size: 12px;">${file.date}</td>
+                        <td style="padding: 10px 8px;">
+                            ${!file.isDir ? `<button class="btn btn-secondary" onclick="event.stopPropagation(); viewFile('${escapeHtml(file.path).replace(/'/g, "\\'")}')" style="font-size: 11px; padding: 4px 10px;">View</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            html += '</tbody></table>';
+            browser.innerHTML = html;
+        }
+        
+        // Navigate to path in file browser
+        function navigateToPath(path) {
+            document.getElementById('browsePath').value = path;
+            browseDirectory();
+        }
+        
+        // View file content
+        function viewFile(path) {
+            document.getElementById('viewFilePath').value = path;
+            viewFileContent();
+        }
+        
         // Enhanced File Management Functions
         async function browseDirectory() {
             const path = document.getElementById('browsePath').value.trim() || '~';
             const browser = document.getElementById('filesBrowser');
             
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                browser.innerHTML = '<div style="text-align: center; padding: 48px; color: var(--text-muted);">Connect to SSH to browse files</div>';
+                showToast('Not connected to SSH', 'error');
+                return;
+            }
+            
             browser.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading...</div>';
             
-            try {
-                const cmd = `ls -la ${path}`;
-                runCommand(cmd);
-                
-                // Simulate getting the output (in real implementation, this would come from backend)
-                setTimeout(() => {
-                    showToast(`Browsing ${path} - check terminal for output`, 'success');
-                }, 500);
-            } catch (error) {
-                browser.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--error);">Error: ${error.message}</div>`;
-                showToast('Failed to browse directory', 'error');
-            }
+            runCommandSilent(`ls -la ${path}`, (output) => {
+                const files = parseLsOutput(output, path);
+                renderFileBrowser(files, path);
+                showToast(`Found ${files.length} items in ${path}`, 'success');
+            });
         }
         
         async function browseHome() {
-            const cmd = 'echo $HOME';
-            runCommand(cmd);
-            setTimeout(() => {
-                runCommand('ls -la ~');
-            }, 500);
-            showToast('Browsing home directory', 'success');
+            document.getElementById('browsePath').value = '~';
+            browseDirectory();
         }
         
-        async function browseScratch() {
-            const cmd = 'ls -la ~/scratch';
-            runCommand(cmd);
-            showToast('Browsing scratch directory', 'success');
+        let browseFilesPanelCollapsed = false;
+        function toggleBrowseFilesPanel() {
+            browseFilesPanelCollapsed = !browseFilesPanelCollapsed;
+            const panelBody = document.getElementById('browseFilesPanelBody');
+            const icon = document.getElementById('browseFilesPanelIcon');
+            panelBody.style.display = browseFilesPanelCollapsed ? 'none' : 'block';
+            icon.style.transform = browseFilesPanelCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
         }
         
         async function uploadFileToRemote() {
@@ -2237,47 +2512,259 @@
             showToast(`Checking disk usage for ${path}`, 'success');
         }
         
-        // SLURM Dashboard Functions
+        // SLURM Dashboard Functions - Parse from Terminal Output
         let dashboardRefreshInterval = null;
+        let terminalOutputBuffer = '';
+        let pendingCommand = null;
+        let commandCallbacks = {};
         
-        async function loadDashboard() {
-            try {
-                const response = await fetch('/api/slurm/dashboard');
-                const data = await response.json();
-                
-                if (!data.success) {
-                    showToast('Failed to load dashboard data', 'error');
-                    return;
+        // Enhanced message handler to capture and parse output
+        function setupOutputParser() {
+            // Store original onmessage if exists
+            const originalOnMessage = ws ? ws.onmessage : null;
+            
+            if (ws) {
+                ws.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'output') {
+                        term.write(msg.data);
+                        
+                        // Add to buffer for parsing
+                        terminalOutputBuffer += msg.data;
+                        
+                        // Check if we have a complete output (ends with prompt)
+                        if (pendingCommand && (msg.data.includes('$') || msg.data.includes('#') || msg.data.includes('%'))) {
+                            const callback = commandCallbacks[pendingCommand];
+                            if (callback) {
+                                callback(terminalOutputBuffer);
+                                delete commandCallbacks[pendingCommand];
+                            }
+                            pendingCommand = null;
+                            terminalOutputBuffer = '';
+                        }
+                        
+                        setTimeout(() => term.scrollToBottom(), 10);
+                        
+                        if (msg.data.includes('Last login') || msg.data.includes('$') || msg.data.includes('#')) {
+                            if (!isConnected) {
+                                isConnected = true;
+                                updateConnectionStatus(true);
+                                logToTerminal(`Connected to ${document.getElementById('user').value}@${document.getElementById('host').value}`, 'ok');
+                            }
+                        }
+                    } else if (msg.type === 'connected') {
+                        logToTerminal(`SSH session started`, 'warn');
+                    } else if (msg.type === 'error') {
+                        term.writeln(`\x1b[31mError: ${msg.data}\x1b[0m`);
+                        logToTerminal(msg.data, 'err');
+                        setTimeout(() => term.scrollToBottom(), 10);
+                    }
+                };
+            }
+        }
+        
+        // Execute command and capture output
+        function executeAndParse(cmd, callback) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                showToast('Not connected. Connect first.', 'error');
+                return;
+            }
+            
+            terminalOutputBuffer = '';
+            pendingCommand = cmd;
+            commandCallbacks[cmd] = callback;
+            
+            ws.send(JSON.stringify({ type: 'input', data: cmd + '\n' }));
+        }
+        
+        // Parse squeue output
+        function parseSqueueOutput(output) {
+            const jobs = [];
+            const lines = output.split('\n');
+            
+            for (const line of lines) {
+                // Skip header and empty lines
+                if (line.includes('JOBID') || line.includes('squeue') || line.trim() === '' || line.includes('$') || line.includes('#')) {
+                    continue;
                 }
                 
+                // Parse squeue format: JOBID PARTITION NAME USER ST TIME NODES NODELIST(REASON)
+                const parts = line.trim().split(/\s+/);
+                if (parts.length >= 7 && /^\d+/.test(parts[0])) {
+                    const status = parts[4];
+                    let statusColor = 'muted';
+                    if (status === 'R' || status === 'RUNNING') statusColor = 'success';
+                    else if (status === 'PD' || status === 'PENDING') statusColor = 'warning';
+                    else if (status === 'F' || status === 'FAILED') statusColor = 'error';
+                    else if (status === 'CG' || status === 'COMPLETING') statusColor = 'info';
+                    
+                    jobs.push({
+                        job_id: parts[0],
+                        partition: parts[1],
+                        name: parts[2],
+                        user: parts[3],
+                        status: status === 'R' ? 'RUNNING' : status === 'PD' ? 'PENDING' : status,
+                        status_color: statusColor,
+                        elapsed_time: parts[5],
+                        nodes: parts[6],
+                        nodelist: parts[7] || 'N/A',
+                        cpus: 'N/A',
+                        gpus: '0',
+                        reason: parts[7] && parts[7].includes('(') ? parts[7].replace(/[()]/g, '') : ''
+                    });
+                }
+            }
+            return jobs;
+        }
+        
+        // Parse sinfo output for nodes
+        function parseSinfoOutput(output) {
+            const nodes = [];
+            const lines = output.split('\n');
+            
+            for (const line of lines) {
+                if (line.includes('NODELIST') || line.includes('sinfo') || line.trim() === '' || line.includes('$') || line.includes('#')) {
+                    continue;
+                }
+                
+                // Parse sinfo format: NODELIST PARTITION STATE CPUS MEMORY GRES
+                const parts = line.trim().split(/\s+/);
+                if (parts.length >= 4) {
+                    const state = parts[2] || 'unknown';
+                    let stateColor = 'warning';
+                    if (state.includes('idle')) stateColor = 'success';
+                    else if (state.includes('alloc') || state.includes('mix')) stateColor = 'info';
+                    else if (state.includes('down') || state.includes('drain')) stateColor = 'error';
+                    
+                    nodes.push({
+                        name: parts[0],
+                        partition: parts[1],
+                        state: state,
+                        state_color: stateColor,
+                        cpus: parts[3] || 'N/A',
+                        memory: parts[4] || 'N/A',
+                        gpus: parts[5] && parts[5].includes('gpu') ? parts[5].split(':')[1] || '0' : '0'
+                    });
+                }
+            }
+            return nodes;
+        }
+        
+        // Parse GPU info from sinfo
+        function parseGpuInfo(output) {
+            const gpuNodes = [];
+            const lines = output.split('\n');
+            
+            for (const line of lines) {
+                if (line.includes('NODELIST') || line.includes('sinfo') || line.trim() === '' || line.includes('$') || line.includes('#')) {
+                    continue;
+                }
+                
+                const parts = line.trim().split(/\s+/);
+                if (parts.length >= 3 && parts[2] && parts[2].includes('gpu')) {
+                    gpuNodes.push({
+                        node: parts[0],
+                        partition: parts[1],
+                        gpus: parts[2].split(':')[2] || parts[2].split(':')[1] || '1',
+                        state: parts[3] || 'unknown'
+                    });
+                }
+            }
+            return gpuNodes;
+        }
+        
+        // Load dashboard by running SLURM commands
+        async function loadDashboard() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                document.getElementById('totalJobsCount').textContent = '-';
+                document.getElementById('runningJobsCount').textContent = '-';
+                document.getElementById('pendingJobsCount').textContent = '-';
+                document.getElementById('totalNodesCount').textContent = '-';
+                document.getElementById('jobsContainer').innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-muted);">Connect to SSH to load dashboard</div>';
+                return;
+            }
+            
+            showToast('Refreshing dashboard...', 'info');
+            
+            // Run squeue to get jobs
+            runCommandSilent('squeue -u $USER --format="%.18i %.9P %.30j %.8u %.2t %.10M %.6D %R"', (output) => {
+                const jobs = parseSqueueOutput(output);
+                
                 // Update stats
-                document.getElementById('totalJobsCount').textContent = data.total_jobs;
-                const runningJobs = data.jobs.filter(j => j.status === 'RUNNING').length;
-                const pendingJobs = data.jobs.filter(j => j.status === 'PENDING').length;
-                document.getElementById('runningJobsCount').textContent = runningJobs;
-                document.getElementById('pendingJobsCount').textContent = pendingJobs;
-                document.getElementById('totalNodesCount').textContent = data.total_nodes;
+                document.getElementById('totalJobsCount').textContent = jobs.length;
+                document.getElementById('runningJobsCount').textContent = jobs.filter(j => j.status === 'RUNNING').length;
+                document.getElementById('pendingJobsCount').textContent = jobs.filter(j => j.status === 'PENDING').length;
                 
                 // Render jobs
-                renderJobCards(data.jobs);
-                
-                // Render nodes
-                renderNodesTable(data.nodes);
-                
-                // Render GPU info
-                renderGpuInfo(data.gpu_info);
-                
-            } catch (error) {
-                console.error('Dashboard error:', error);
-                showToast('Error loading dashboard', 'error');
+                renderJobCards(jobs);
+            });
+            
+            // Run sinfo to get nodes
+            runCommandSilent('sinfo --format="%.20N %.10P %.10t %.4c %.10m %.10G"', (output) => {
+                const nodes = parseSinfoOutput(output);
+                document.getElementById('totalNodesCount').textContent = nodes.length;
+                renderNodesTable(nodes);
+            });
+            
+            // Run sinfo for GPU info
+            runCommandSilent('sinfo -o "%N %P %G %t" --noheader | grep gpu', (output) => {
+                const gpuInfo = parseGpuInfo(output);
+                renderGpuInfo(gpuInfo);
+            });
+        }
+        
+        // Run command silently (don't switch to terminal view)
+        function runCommandSilent(cmd, callback) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                return;
             }
+            
+            // Create unique command ID
+            const cmdId = cmd + '_' + Date.now();
+            let outputBuffer = '';
+            let timeoutId = null;
+            
+            // Store original handler
+            const originalHandler = ws.onmessage;
+            
+            // Temporary handler to capture output
+            const captureOutput = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'output') {
+                    term.write(msg.data);
+                    outputBuffer += msg.data;
+                    
+                    // Reset timeout on each output
+                    if (timeoutId) clearTimeout(timeoutId);
+                    
+                    // Check if command completed (prompt appeared)
+                    if (msg.data.includes('$') || msg.data.includes('#') || msg.data.includes('%')) {
+                        ws.onmessage = originalHandler;
+                        if (callback) callback(outputBuffer);
+                    } else {
+                        // Set timeout in case prompt not detected
+                        timeoutId = setTimeout(() => {
+                            ws.onmessage = originalHandler;
+                            if (callback) callback(outputBuffer);
+                        }, 2000);
+                    }
+                    
+                    setTimeout(() => term.scrollToBottom(), 10);
+                } else {
+                    // Handle other message types normally
+                    if (originalHandler) originalHandler(event);
+                }
+            };
+            
+            ws.onmessage = captureOutput;
+            ws.send(JSON.stringify({ type: 'input', data: cmd + '\n' }));
         }
         
         function renderJobCards(jobs) {
             const container = document.getElementById('jobsContainer');
             
             if (!jobs || jobs.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No jobs found</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-muted);">No active jobs found</div>';
                 return;
             }
             
@@ -2287,28 +2774,29 @@
                         ${job.status.substring(0, 3)}
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <h3 style="margin: 0; color: var(--accent);">Job #${job.job_id} - ${escapeHtml(job.name)}</h3>
-                            <span style="display: inline-block; padding: 4px 8px; background: var(--bg-card); border-radius: 4px; font-size: 12px; color: var(--text-secondary);">
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <h3 style="margin: 0; color: var(--accent-bright); font-size: 16px;">Job #${job.job_id}</h3>
+                            <span style="color: var(--text-secondary); font-size: 14px;">${escapeHtml(job.name)}</span>
+                            <span style="display: inline-block; padding: 4px 10px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-secondary); font-weight: 500;">
                                 ${job.status}
                             </span>
                         </div>
                         <div class="job-info">
                             <div class="job-info-item">
+                                <label>Partition</label>
+                                <value>${escapeHtml(job.partition)}</value>
+                            </div>
+                            <div class="job-info-item">
                                 <label>Nodes</label>
                                 <value>${escapeHtml(job.nodes)}</value>
                             </div>
                             <div class="job-info-item">
-                                <label>CPUs</label>
-                                <value>${job.cpus}</value>
-                            </div>
-                            <div class="job-info-item">
-                                <label>GPUs</label>
-                                <value>${job.gpus !== '0' ? job.gpus : 'None'}</value>
-                            </div>
-                            <div class="job-info-item">
-                                <label>Elapsed</label>
+                                <label>Time</label>
                                 <value>${job.elapsed_time || 'N/A'}</value>
+                            </div>
+                            <div class="job-info-item">
+                                <label>Node List</label>
+                                <value>${escapeHtml(job.nodelist)}</value>
                             </div>
                             ${job.reason ? `
                             <div class="job-info-item">
@@ -2319,8 +2807,8 @@
                         </div>
                     </div>
                     <div class="job-actions">
-                        <button class="btn btn-secondary" onclick="jobDetailInfo('${job.job_id}')" style="font-size: 11px; padding: 6px 10px;">Info</button>
-                        <button class="btn btn-danger" onclick="quickCancel('${job.job_id}')" style="font-size: 11px; padding: 6px 10px;">Cancel</button>
+                        <button class="btn btn-secondary" onclick="jobDetailInfo('${job.job_id}')" style="font-size: 12px; padding: 8px 12px;">Details</button>
+                        <button class="btn btn-danger" onclick="quickCancel('${job.job_id}')" style="font-size: 12px; padding: 8px 12px;">Cancel</button>
                     </div>
                 </div>
             `).join('');
@@ -2330,21 +2818,21 @@
             const tbody = document.getElementById('nodesTableBody');
             
             if (!nodes || nodes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">No nodes available</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">No nodes available</td></tr>';
                 return;
             }
             
             tbody.innerHTML = nodes.map(node => `
-                <tr style="border-bottom: 1px solid var(--border); hover: {background: var(--bg-tertiary);}">
-                    <td style="padding: 12px; color: var(--accent); font-weight: 500;">${escapeHtml(node.name)}</td>
-                    <td style="padding: 12px;">
-                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; background: ${node.state_color === 'success' ? 'rgba(0, 255, 136, 0.2)' : 'rgba(255, 165, 2, 0.2)'}; color: ${node.state_color === 'success' ? 'var(--success)' : 'var(--warning)'};">
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 14px 16px; color: var(--text-primary); font-weight: 500;">${escapeHtml(node.name)}</td>
+                    <td style="padding: 14px 16px;">
+                        <span style="padding: 4px 10px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; background: ${node.state_color === 'success' ? 'rgba(34, 197, 94, 0.15)' : node.state_color === 'info' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${node.state_color === 'success' ? 'var(--success)' : node.state_color === 'info' ? 'var(--accent-bright)' : 'var(--warning)'};">
                             ${node.state}
                         </span>
                     </td>
-                    <td style="padding: 12px;">${node.cpus}</td>
-                    <td style="padding: 12px;">${node.memory}</td>
-                    <td style="padding: 12px; color: ${node.gpus !== '0' ? 'var(--accent)' : 'var(--text-muted)'};">${node.gpus !== '0' ? `${node.gpus} GPUs` : 'None'}</td>
+                    <td style="padding: 14px 16px; color: var(--text-secondary);">${node.cpus}</td>
+                    <td style="padding: 14px 16px; color: var(--text-secondary);">${node.memory}</td>
+                    <td style="padding: 14px 16px; color: ${node.gpus !== '0' ? 'var(--accent-bright)' : 'var(--text-muted)'};">${node.gpus !== '0' ? `${node.gpus} GPU(s)` : 'None'}</td>
                 </tr>
             `).join('');
         }
@@ -2353,23 +2841,29 @@
             const container = document.getElementById('gpuContainer');
             
             if (!gpuInfo || gpuInfo.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No GPU information available</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-muted);">No GPU nodes found or GPU info unavailable</div>';
                 return;
             }
             
             container.innerHTML = gpuInfo.map(gpu => `
-                <div style="padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center;">
-                    <div style="font-size: 32px;">🎮</div>
+                <div class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center;">
+                    <div style="width: 56px; height: 56px; background: var(--accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 24px; filter: grayscale(1) brightness(2);">🎮</span>
+                    </div>
                     <div>
-                        <h4 style="margin: 0 0 8px 0; color: var(--accent);">${escapeHtml(gpu.node)}</h4>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 13px;">
+                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 16px;">${escapeHtml(gpu.node)}</h4>
+                        <div style="display: flex; gap: 24px; font-size: 13px;">
                             <div>
-                                <span style="color: var(--text-muted); font-size: 11px;">GPUs</span>
-                                <div style="color: var(--accent); font-weight: bold;">${gpu.gpus}</div>
+                                <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Partition</span>
+                                <div style="color: var(--text-primary); font-weight: 600; margin-top: 4px;">${escapeHtml(gpu.partition)}</div>
                             </div>
                             <div>
-                                <span style="color: var(--text-muted); font-size: 11px;">State</span>
-                                <div style="color: ${gpu.state === 'idle' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${gpu.state}</div>
+                                <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">GPUs</span>
+                                <div style="color: var(--accent-bright); font-weight: 600; margin-top: 4px;">${gpu.gpus}</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">State</span>
+                                <div style="color: ${gpu.state.includes('idle') ? 'var(--success)' : 'var(--warning)'}; font-weight: 600; margin-top: 4px;">${gpu.state}</div>
                             </div>
                         </div>
                     </div>
@@ -2416,18 +2910,8 @@
             }
         }
         
-        // Load dashboard on SLURM tab switch
-        const originalSwitchTab = window.switchTab;
-        window.switchTab = function(tabName) {
-            originalSwitchTab(tabName);
-            if (tabName === 'slurm') {
-                loadDashboard();
-            }
-        };
-        
         // Initial load when page opens
         document.addEventListener('DOMContentLoaded', () => {
-            loadDashboard();
             loadProfiles();
         });
     </script>
