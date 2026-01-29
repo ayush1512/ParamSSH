@@ -285,13 +285,15 @@
         
         /* Profile Card Styles */
         .profile-card {
-            padding: 14px 16px;
+            padding: clamp(10px, 3%, 16px);
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             margin-bottom: 10px;
             transition: all 0.2s ease;
             cursor: pointer;
+            overflow: hidden;
+            min-width: 0;
         }
         
         .profile-card:hover {
@@ -303,31 +305,49 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
+            min-width: 0;
         }
         
         .profile-card-name {
             font-weight: 600;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: clamp(12px, 3.5vw, 14px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .profile-card-header > span:last-child {
+            flex-shrink: 0;
+            font-size: clamp(9px, 2.5vw, 11px) !important;
         }
         
         .profile-card-info {
-            font-size: 12px;
+            font-size: clamp(10px, 2.8vw, 12px);
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-family: 'Monaco', 'Menlo', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
         
         .profile-card-actions {
             display: flex;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
         .profile-btn {
-            flex: 1;
-            padding: 8px 12px;
-            font-size: 12px;
+            flex: 1 1 auto;
+            min-width: 60px;
+            padding: clamp(6px, 2%, 8px) clamp(8px, 3%, 12px);
+            font-size: clamp(10px, 2.8vw, 12px);
             border: 1px solid var(--border);
             background: var(--bg-secondary);
             color: var(--text-secondary);
@@ -335,6 +355,8 @@
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: 500;
+            white-space: nowrap;
+            text-align: center;
         }
         
         .profile-btn:hover {
@@ -347,6 +369,16 @@
             background: rgba(239, 68, 68, 0.15);
             color: var(--error);
             border-color: var(--error);
+        }
+        
+        @media (max-width: 300px) {
+            .profile-card-actions {
+                flex-direction: column;
+            }
+            
+            .profile-btn {
+                width: 100%;
+            }
         }
         
         /* Nav Menu */
@@ -1309,26 +1341,6 @@
                             <div id="downloadStatus" style="margin-top: 10px; font-size: 13px;"></div>
                         </div>
                         
-                        <!-- File Search Card -->
-                        <div class="card">
-                            <h4>Search Files</h4>
-                            <div class="form-group">
-                                <label>Search Path</label>
-                                <input type="text" id="searchPath" placeholder="~" value="~">
-                            </div>
-                            <div class="form-group">
-                                <label>File Pattern</label>
-                                <input type="text" id="searchPattern" placeholder="*.py">
-                            </div>
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                                    <input type="checkbox" id="searchDepth" style="accent-color: var(--accent-bright);">
-                                    <span>Current directory only</span>
-                                </label>
-                            </div>
-                            <button class="btn btn-primary" onclick="searchFiles()">Search</button>
-                        </div>
-                        
                         <!-- Create Directory Card -->
                         <div class="card">
                             <h4>Create Directory</h4>
@@ -1337,36 +1349,6 @@
                                 <input type="text" id="createDirPath" placeholder="~/new_folder">
                             </div>
                             <button class="btn btn-primary" onclick="createDirectory()">Create</button>
-                        </div>
-                        
-                        <!-- Delete File/Directory Card -->
-                        <div class="card">
-                            <h4>Delete File/Directory</h4>
-                            <div class="form-group">
-                                <label>Path</label>
-                                <input type="text" id="deletePath" placeholder="~/file_or_folder">
-                            </div>
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                                    <input type="checkbox" id="deleteIsDir" style="accent-color: var(--accent-bright);">
-                                    <span>Is Directory</span>
-                                </label>
-                            </div>
-                            <button class="btn btn-danger" onclick="deleteFileOrDir()">Delete</button>
-                        </div>
-                        
-                        <!-- Rename/Move Card -->
-                        <div class="card">
-                            <h4>Rename / Move</h4>
-                            <div class="form-group">
-                                <label>Old Path</label>
-                                <input type="text" id="renameOldPath" placeholder="~/oldname.txt">
-                            </div>
-                            <div class="form-group">
-                                <label>New Path</label>
-                                <input type="text" id="renameNewPath" placeholder="~/newname.txt">
-                            </div>
-                            <button class="btn btn-primary" onclick="renameFile()">Rename/Move</button>
                         </div>
                         
                         <!-- Edit File Card -->
